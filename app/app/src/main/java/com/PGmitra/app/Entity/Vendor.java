@@ -1,10 +1,9 @@
 package com.PGmitra.app.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -14,6 +13,15 @@ import lombok.*;
 public class Vendor {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    Integer id;
+    Integer vendor_id;
     String username;
+    String email;
+    String password;
+
+    @OneToMany
+    List<Tenant> tenants;
+
+    @OneToMany
+    List<Rooms> rooms;
+
 }
