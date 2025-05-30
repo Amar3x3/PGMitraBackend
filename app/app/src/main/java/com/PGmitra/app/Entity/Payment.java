@@ -24,9 +24,8 @@ public class Payment {
     private Rooms room;
 
     private LocalDate paymentDate;
-    private LocalDate paymentForMonth; // Represents the month for which the payment is made
-    private Integer amountPaid; // Assuming rent is in whole numbers
-
+    private LocalDate paymentForMonth;
+    private Integer amountPaid;
     private String paymentMethod;
 
     private String paymentStatus;
