@@ -2,31 +2,34 @@ package com.PGmitra.app.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@Table(name = "tenants")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Tenant {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer tenant_id;
-    private String username;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
+    private String name;
+    @Column(unique = true) private String username;
+    private String password;
+    private String phone;
+    @Column(unique = true) private String email;
 
-    private String contactNumber;
-    private String email;
-    private LocalDate leaseStartDate;
-    private LocalDate leaseEndDate;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
 
-    @ManyToOne
-    @Column(name = "vendor_id")
-    private Vendor vendor_id;
+    @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments = new ArrayList<>();
 
-    @ManyToOne
-    @Column(name = "room_id")
-    private Rooms room;
+    @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Feedback> feedbackSubmitted = new ArrayList<>();
 
+    // Add other fields like moveInDate, permanentAddress etc. as per full feature list.
 }
