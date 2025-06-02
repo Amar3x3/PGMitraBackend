@@ -18,6 +18,8 @@ public class Vendor {
     String email;
     String password;
 
+    private String emailAppPassword;
+
     @OneToMany
     List<Tenant> tenants;
 

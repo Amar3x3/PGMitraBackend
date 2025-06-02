@@ -23,6 +23,8 @@ public class Payment {
     @JoinColumn(name = "room_id")
     private Rooms room;
 
+    private LocalDate dueDate;
+    private boolean paid;
     private LocalDate paymentDate;
     private LocalDate paymentForMonth;
     private Integer amountPaid;
