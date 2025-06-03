@@ -113,4 +113,14 @@ public class Owner {
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Feedback> feedbackReceived = new ArrayList<>(); // If owner is the primary handler
+
+    private String emailAppPassword;
+
+    public String getEmailAppPassword() {
+        return emailAppPassword;
+    }
+
+    public void setEmailAppPassword(String emailAppPassword) {
+        this.emailAppPassword = emailAppPassword;
+    }
 }

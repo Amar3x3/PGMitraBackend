@@ -9,6 +9,7 @@ public class RoomDTO {
     private int capacity;
     private int occupied; // Should be updated when tenants are added/removed
     private BigDecimal rent; // Added this back as it's usually important
+    private Property property;
 
     public Property getProperty() {
         return property;
@@ -50,5 +51,5 @@ public class RoomDTO {
         this.room_no = room_no;
     }
 
-    private Property property;
+
 }

@@ -2,15 +2,9 @@ package com.PGmitra.app.Controller;
 
 import com.PGmitra.app.DTO.OwnerDTO;
 import com.PGmitra.app.DTO.RoomDTO;
-import com.PGmitra.app.Entity.Owner;
-import com.PGmitra.app.Entity.Property;
-import com.PGmitra.app.Entity.Room;
-import com.PGmitra.app.Entity.Vendor;
+import com.PGmitra.app.Entity.*;
 import com.PGmitra.app.Exception.ResourceAlreadyExistsException;
-import com.PGmitra.app.Response.LoginRequest;
-import com.PGmitra.app.Response.LoginResponse;
-import com.PGmitra.app.Response.PropertyRequest;
-import com.PGmitra.app.Response.StatusAndMessageResponse;
+import com.PGmitra.app.Response.*;
 import com.PGmitra.app.Service.PropertyService;
 import com.PGmitra.app.Service.RoomsService;
 import com.PGmitra.app.Service.VendorService;
@@ -68,5 +62,9 @@ public class VendorController {
         Room createdRoom =  roomsService.createRoom(roomDTO);
         return new ResponseEntity<>(createdRoom, HttpStatus.CREATED);
     }
+//    @PostMapping("/addNewTenant")
+//    public ResponseEntity<Tenant> addNewMember(@RequestBody RoomMemberRequest roomMemberRequest){
+//
+//    }
 
 }
