@@ -11,4 +11,6 @@ public class TenantController {
     public String hello(){
         return "hello from tenant api";
     }
+
+
 }

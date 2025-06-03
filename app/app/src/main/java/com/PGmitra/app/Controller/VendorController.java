@@ -62,9 +62,22 @@ public class VendorController {
         Room createdRoom =  roomsService.createRoom(roomDTO);
         return new ResponseEntity<>(createdRoom, HttpStatus.CREATED);
     }
-//    @PostMapping("/addNewTenant")
-//    public ResponseEntity<Tenant> addNewMember(@RequestBody RoomMemberRequest roomMemberRequest){
-//
-//    }
+
+    @PostMapping("/addNewTenant")
+    public ResponseEntity<Room> addNewMember(@RequestBody RoomMemberRequest roomMemberRequest){
+        long room_id = roomMemberRequest.room_id();
+        long property_id = roomMemberRequest.property_id();
+        long tenant_id = roomMemberRequest.tenant_id();
+        return roomsService.addNewTenant(room_id, property_id, tenant_id);
+    }
+    @PostMapping("/deleteTenant")
+    public ResponseEntity<Room> deleteTenant(@RequestBody RoomMemberRequest roomMemberRequest){
+        long room_id = roomMemberRequest.room_id();
+        long property_id = roomMemberRequest.property_id();
+        long tenant_id = roomMemberRequest.tenant_id();
+        return roomsService.deleteTenant(room_id, property_id, tenant_id);
+    }
+
+
 
 }
