@@ -12,6 +12,7 @@ import com.PGmitra.app.Response.LoginResponse;
 import com.PGmitra.app.Response.PropertyRequest;
 import com.PGmitra.app.Response.StatusAndMessageResponse;
 import com.PGmitra.app.Service.PropertyService;
+import com.PGmitra.app.Service.RoomsService;
 import com.PGmitra.app.Service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,9 @@ public class VendorController {
 
     @Autowired
     private PropertyService propertyService;
+
+    @Autowired
+    private RoomsService roomsService;
 
     @GetMapping("/hello")
     public String hello(){
@@ -57,10 +61,12 @@ public class VendorController {
         return new ResponseEntity<>(createdProperty, HttpStatus.CREATED);
     }
 
-//    @PostMapping("/room/{id}")
-//    public ResponseEntity<Room> createNewRoom(@RequestBody RoomDTO roomDTO, @PathVariable Long id){
-//        Optional<Property> property = propertyService.getPropertyById(id);
-//
-//    }
+    @PostMapping("/room/{id}")
+    public ResponseEntity<Room> createNewRoom(@RequestBody RoomDTO roomDTO, @PathVariable Long id){
+        Optional<Property> property = propertyService.getPropertyById(id);
+        roomDTO.setProperty(property.get());
+        Room createdRoom =  roomsService.createRoom(roomDTO);
+        return new ResponseEntity<>(createdRoom, HttpStatus.CREATED);
+    }
 
 }

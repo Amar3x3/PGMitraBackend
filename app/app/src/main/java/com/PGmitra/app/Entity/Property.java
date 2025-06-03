@@ -17,7 +17,7 @@ public class Property {
     private String name;
     private String address;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
 
