@@ -15,35 +15,74 @@ import java.util.List;
 @Builder // Useful for creating instances
 public class Vendor {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY is often preferred for auto-increment PKs
-    @Column(name = "vendor_id")
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    Integer vendor_id;
+    String username;
+    String email;
+    String password;
 
-    @Column(unique = true, nullable = false)
-    private String username;
+    public Integer getVendor_id() {
+        return vendor_id;
+    }
 
-    @Column(unique = true, nullable = false)
-    private String email;
+    public void setVendor_id(Integer vendor_id) {
+        this.vendor_id = vendor_id;
+    }
 
-    @Column(nullable = false)
-    private String password;
+    public String getUsername() {
+        return username;
+    }
 
-    @Column(nullable = false)
-    private String phone;
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-//
-//    @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-//    private List<Property> properties = new ArrayList<>();
-//
-//
-//    @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-//    private List<Announcement> announcements = new ArrayList<>();
-//
-//
-//    @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-//    private List<DiningMenu> diningMenus = new ArrayList<>();
-//
-//
-//    @OneToMany(mappedBy = "vendor", fetch = FetchType.LAZY)
-//    private List<Tenant> tenants = new ArrayList<>();
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmailAppPassword() {
+        return emailAppPassword;
+    }
+
+    public void setEmailAppPassword(String emailAppPassword) {
+        this.emailAppPassword = emailAppPassword;
+    }
+
+    public List<Tenant> getTenants() {
+        return tenants;
+    }
+
+    public void setTenants(List<Tenant> tenants) {
+        this.tenants = tenants;
+    }
+
+    public List<Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(List<Room> rooms) {
+        this.rooms = rooms;
+    }
+
+    private String emailAppPassword;
+
+    @OneToMany
+    List<Tenant> tenants;
+
+    @OneToMany
+    List<Room> rooms;
+
 }

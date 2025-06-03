@@ -10,13 +10,11 @@ import lombok.*;
 public class OwnerDTO {
 
     private String name;
-
-
     private String username;
-
     private String password;
-
     private String phone;
-
     private String email;
+
+
+
 }
