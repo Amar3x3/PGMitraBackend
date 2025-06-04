@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.PGmitra.app.DTO.TenantDTO;
 import com.PGmitra.app.DTO.TenantProfileDTO;
+import com.PGmitra.app.DTO.TenantUpdateDTO;
 import com.PGmitra.app.Entity.Owner;
 import com.PGmitra.app.Entity.Tenant;
 import com.PGmitra.app.Exception.ResourceAlreadyExistsException;
@@ -43,6 +44,10 @@ public class TenantService {
         tenant.setGender(dto.getGender());
         tenant.setFoodPreference(dto.getFoodPreference());
         tenant.setPassword(dto.getPassword());
+        tenant.setAadharNumber(dto.getAadharNumber());
+        tenant.setEmergencyContactName(dto.getEmergencyContactName());
+        tenant.setEmergencyContactPhone(dto.getEmergencyContactPhone());
+        tenant.setOccupation(dto.getOccupation());
 
         return tenantRepository.save(tenant);
     }
@@ -56,11 +61,25 @@ public class TenantService {
 
     public TenantProfileDTO getTenantProfile(String username) throws ResourceNotFoundException {
         Tenant tenant = tenantRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("Tenant with username '" + username + "' not found"));
-        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getPhone(), tenant.getGender(), tenant.getFoodPreference());
+        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getPhone(), tenant.getGender(), tenant.getFoodPreference(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation());
     }
     
 
     public Optional<Tenant> getTenantById(long id){
         return tenantRepository.findById(id);
+    }
+
+    public void updateTenantDetails(Long tenantId, TenantUpdateDTO dto) {
+        Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new ResourceNotFoundException("Tenant not found"));
+
+        if(dto.getName()!=null) tenant.setName(dto.getName());
+        if(dto.getPhone()!=null) tenant.setPhone(dto.getPhone());
+        if(dto.getGender()!=null) tenant.setGender(dto.getGender());
+        if(dto.getFoodPreference()!=null) tenant.setFoodPreference(dto.getFoodPreference());
+        if(dto.getEmergencyContactName()!=null) tenant.setEmergencyContactName(dto.getEmergencyContactName());
+        if(dto.getEmergencyContactPhone()!=null) tenant.setEmergencyContactPhone(dto.getEmergencyContactPhone());
+        if(dto.getOccupation()!=null) tenant.setOccupation(dto.getOccupation());
+
+        tenantRepository.save(tenant);
     }
 }

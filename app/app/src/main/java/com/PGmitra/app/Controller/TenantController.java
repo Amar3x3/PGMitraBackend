@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import com.PGmitra.app.DTO.FeedbackDTO;
 import com.PGmitra.app.DTO.OwnerDTO;
 import com.PGmitra.app.DTO.TenantDTO;
 import com.PGmitra.app.DTO.TenantProfileDTO;
+import com.PGmitra.app.DTO.TenantUpdateDTO;
 import com.PGmitra.app.Entity.Owner;
 import com.PGmitra.app.Entity.Tenant;
 import com.PGmitra.app.Exception.ResourceAlreadyExistsException;
@@ -25,6 +27,8 @@ import com.PGmitra.app.Response.LoginResponse;
 import com.PGmitra.app.Service.FeedbackService;
 import com.PGmitra.app.Service.TenantService;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 @RestController
@@ -76,6 +80,18 @@ public class TenantController {
         catch(ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
+    }
+
+    @PutMapping("update/{tenantId}")
+    public ResponseEntity<Object> updateTenant(@PathVariable Long tenantId, @RequestBody TenantUpdateDTO dto) {
+        //TODO: process PUT request
+        try{
+            tenantService.updateTenantDetails(tenantId, dto);
+            return ResponseEntity.status(HttpStatus.OK).body("Details updated Successfully!");
+        }
+        catch(ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }    
     }
     
 }
