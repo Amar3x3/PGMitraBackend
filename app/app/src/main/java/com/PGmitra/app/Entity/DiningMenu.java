@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class DiningMenu {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     private LocalDate date;
-    @Lob private String text; // menu items for the day
+    private String text; // menu items for the day
     // Consider separate fields for breakfast, lunch, dinner if needed
     private LocalDateTime createdAt;
 
