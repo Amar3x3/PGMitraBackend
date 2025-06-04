@@ -20,6 +20,10 @@ public class Tenant {
     @Column(unique = true) private String username;
     private String password;
 
+    private String gender;
+
+    private String foodPreference;
+
     public String getPhone() {
         return phone;
     }
