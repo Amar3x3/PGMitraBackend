@@ -15,9 +15,10 @@ import java.time.LocalDateTime;
 @Setter
 public class Feedback {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
-    @Lob private String text; // complaint
+    private String text; // complaint
     private String status;
     private LocalDateTime createdAt;
+    private String Title;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", nullable = false)

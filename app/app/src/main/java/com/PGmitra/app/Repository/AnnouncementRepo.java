@@ -1,7 +1,12 @@
 package com.PGmitra.app.Repository;
 
-import com.PGmitra.app.Entity.Announcement;
+
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AnnouncementRepo extends JpaRepository<Announcement, Long> {
-}
+import com.PGmitra.app.Entity.Announcement;
+
+public interface AnnouncementRepo extends JpaRepository<Announcement,Long>{
+    List<Announcement> findByOwnerIdOrderByCreatedAtDesc(Long ownerId);
+} 

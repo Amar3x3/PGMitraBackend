@@ -10,12 +10,17 @@ import lombok.*;
 public class TenantDTO {
 
     private String name;
-    private String username;
     private String password;
-    private String phone;
+    private String userName;
+    private String phoneNumber;
     private String email;
+    private String gender;
+    private String foodPreference;
+
+    
     private String emergencyContactName;
     private String emergencyContactPhone;
     private String aadharNumber; 
     private String occupation;
 }
+
