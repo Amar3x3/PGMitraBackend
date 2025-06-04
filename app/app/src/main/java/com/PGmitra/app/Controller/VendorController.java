@@ -29,6 +29,7 @@ public class VendorController {
     @Autowired
     private RoomsService roomsService;
 
+
     @GetMapping("/hello")
     public String hello(){
         return "hello from vendor api";
@@ -56,11 +57,11 @@ public class VendorController {
     }
 
     @PostMapping("/room/{id}")
-    public ResponseEntity<Room> createNewRoom(@RequestBody RoomDTO roomDTO, @PathVariable Long id){
+    public ResponseEntity<StatusAndMessageResponse> createNewRoom(@RequestBody RoomDTO roomDTO, @PathVariable Long id){
         Optional<Property> property = propertyService.getPropertyById(id);
         roomDTO.setProperty(property.get());
         Room createdRoom =  roomsService.createRoom(roomDTO);
-        return new ResponseEntity<>(createdRoom, HttpStatus.CREATED);
+        return new ResponseEntity<>(new StatusAndMessageResponse(HttpStatus.OK,createdRoom.toString()) ,HttpStatus.CREATED);
     }
 
     @PostMapping("/addNewTenant")
@@ -77,6 +78,14 @@ public class VendorController {
         long tenant_id = roomMemberRequest.tenant_id();
         return roomsService.deleteTenant(room_id, property_id, tenant_id);
     }
+
+    @PostMapping("/announcement")
+    public ResponseEntity<StatusAndMessageResponse> addNewAnnouncement(@RequestBody AnnouncementRequest announcementRequest){
+        Announcement announcement = vendorService.createNewAnnouncement(announcementRequest);
+        return new ResponseEntity<>(new StatusAndMessageResponse(HttpStatus.OK, announcement.toString()), HttpStatus.CREATED);
+    }
+
+
 
 
 

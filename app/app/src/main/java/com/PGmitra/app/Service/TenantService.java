@@ -3,8 +3,10 @@ package com.PGmitra.app.Service;
 import com.PGmitra.app.Entity.Tenant;
 import com.PGmitra.app.Repository.TenantRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import com.PGmitra.app.Entity.Tenant;
 import com.PGmitra.app.Exception.ResourceAlreadyExistsException;
 import com.PGmitra.app.Exception.ResourceNotFoundException;
 import com.PGmitra.app.Repository.TenantRepo;
+
 
 @Service
 public class TenantService {

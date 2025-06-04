@@ -22,10 +22,10 @@ public class Owner {
     private String phone;
     @Column(unique = true) private String email;
 
-    @OneToMany()
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Property> properties = new ArrayList<>();
 
-    @OneToMany()
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Announcement> announcements = new ArrayList<>();
 
     public Long getId() {

@@ -4,7 +4,9 @@ import com.PGmitra.app.DTO.RoomDTO;
 import com.PGmitra.app.Entity.Property;
 import com.PGmitra.app.Entity.Room;
 import com.PGmitra.app.Entity.Tenant;
+import com.PGmitra.app.Repository.PropertyRepo;
 import com.PGmitra.app.Repository.RoomsRepo;
+import com.PGmitra.app.Repository.TenantRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,12 @@ public class RoomsService {
     @Autowired
     private TenantService tenantService;
 
+    @Autowired
+    private PropertyRepo propertyRepo;
+
+    @Autowired
+    private TenantRepo tenantRepo;
+
     public Room createRoom(RoomDTO roomDTO){
         Room room = new Room();
         room.setRoom_no(roomDTO.getRoom_no());
@@ -31,7 +39,12 @@ public class RoomsService {
         room.setOccupied(roomDTO.getOccupied());
         room.setProperty(roomDTO.getProperty());
 
-        return roomsRepo.save(room);
+        Optional<Property> property = propertyRepo.findById(roomDTO.getProperty().getId());
+//        property.get().getRooms().add(room);
+
+        Room createdRooms = roomsRepo.save(room);
+//        propertyRepo.save(property.get());
+        return createdRooms;
     }
 
     public Optional<Room> getRoomByID(long roomId) {
@@ -42,9 +55,14 @@ public class RoomsService {
         Optional<Property> property = propertyService.getPropertyById(propertyId);
         Optional<Room> room = roomsRepo.findById(roomId);
         Optional<Tenant> tenant = tenantService.getTenantById(tenantId);
+
        List<Tenant> tenantList =  room.get().getTenants();
        tenantList.add(tenant.get());
+
        room.get().setTenants(tenantList);
+       tenant.get().setRoom(room.get());
+
+       tenantRepo.save(tenant.get());
        roomsRepo.save(room.get());
         return new ResponseEntity<>(room.get(), HttpStatus.CREATED);
     }

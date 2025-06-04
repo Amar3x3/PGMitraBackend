@@ -91,6 +91,17 @@ public class Room {
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tenant> tenants = new ArrayList<>();
 
+    @Override
+    public String toString() {
+        return "Room{" +
+                "id=" + id +
+                ", room_no=" + room_no +
+                ", capacity=" + capacity +
+                ", occupied=" + occupied +
+                ", rent=" + rent +
+                '}';
+    }
+
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Feedback> feedbackAboutRoom = new ArrayList<>();
 }
