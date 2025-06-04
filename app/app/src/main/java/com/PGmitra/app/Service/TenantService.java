@@ -55,9 +55,6 @@ public class TenantService {
         Tenant tenant = tenantRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("Tenant with username '" + username + "' not found"));
         return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getPhone(), tenant.getGender(), tenant.getFoodPreference());
     }
-
-    
-
     
 
     public Optional<Tenant> getTenantById(long id){
