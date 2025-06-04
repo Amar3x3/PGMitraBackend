@@ -33,7 +33,7 @@ public class DiningMenuService {
     @Transactional
     public DiningMenu insertDummyDiningMenu(Long ownerId) {
         // Retrieve an existing owner. Adjust the ownerId to one that exists in your DB.
-        Owner dummyOwner = ownerRepository.findById(1)
+        Owner dummyOwner = ownerRepository.findById(ownerId)
             .orElseThrow(() -> new ResourceNotFoundException("Owner with ID '" + ownerId + "' not found. Please ensure an owner with this ID exists for testing."));
 
         DiningMenu dummyMenu = new DiningMenu();
