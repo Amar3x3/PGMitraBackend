@@ -1,5 +1,9 @@
 package com.PGmitra.app.Service;
 
+import com.PGmitra.app.Entity.Tenant;
+import com.PGmitra.app.Repository.TenantRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,4 +58,9 @@ public class TenantService {
 
     
 
+    
+
+    public Optional<Tenant> getTenantById(long id){
+        return tenantRepository.findById(id);
+    }
 }
