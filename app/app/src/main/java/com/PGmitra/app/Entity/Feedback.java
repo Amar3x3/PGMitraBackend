@@ -21,7 +21,6 @@ public class Feedback {
     private String Title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "tenant_id", nullable = false)
     private Tenant tenant;
 
     public Long getId() {
@@ -89,11 +88,9 @@ public class Feedback {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "room_id", nullable = false)
     private Room room;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "owner_id", nullable = false)
     private Owner owner;
 
 }
