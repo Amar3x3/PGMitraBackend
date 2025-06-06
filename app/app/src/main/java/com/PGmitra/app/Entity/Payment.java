@@ -28,95 +28,19 @@ public class Payment {
     private Integer amountPaid;
     private boolean paid;
 
-    public boolean isPaid() {
-        return paid;
-    }
-
-    public void setPaid(boolean paid) {
-        this.paid = paid;
-    }
-
-    public LocalDate getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public Integer getAmountPaid() {
-        return amountPaid;
-    }
-
-    public void setAmountPaid(Integer amountPaid) {
-        this.amountPaid = amountPaid;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-    public int getPaymentForMonth() {
-        return paymentForMonth;
-    }
-
-    public void setPaymentForMonth(int paymentForMonth) {
-        this.paymentForMonth = paymentForMonth;
-    }
-
-    public int getPaymentForYear() {
-        return paymentForYear;
-    }
-
-    public void setPaymentForYear(int paymentForYear) {
-        this.paymentForYear = paymentForYear;
-    }
-
-    public Tenant getTenant() {
-        return tenant;
-    }
-
-    public void setTenant(Tenant tenant) {
-        this.tenant = tenant;
-    }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Owner owner;
+
+    public Owner getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Owner owner) {
+        this.owner = owner;
+    }
+
 }
