@@ -5,6 +5,7 @@ import com.PGmitra.app.DTO.PropertyDTO;
 import com.PGmitra.app.DTO.RoomDTO;
 import com.PGmitra.app.Entity.*;
 import com.PGmitra.app.Exception.ResourceAlreadyExistsException;
+import com.PGmitra.app.Exception.RoomCapacityFull;
 import com.PGmitra.app.Response.*;
 import com.PGmitra.app.Service.PropertyService;
 import com.PGmitra.app.Service.RoomsService;
@@ -66,12 +67,13 @@ public class VendorController {
     }
 
     @PostMapping("/addNewTenant")
-    public ResponseEntity<Room> addNewMember(@RequestBody RoomMemberRequest roomMemberRequest){
+    public ResponseEntity<StatusAndMessageResponse> addNewMember(@RequestBody RoomMemberRequest roomMemberRequest) throws RoomCapacityFull {
         long room_id = roomMemberRequest.room_id();
         long property_id = roomMemberRequest.property_id();
         long tenant_id = roomMemberRequest.tenant_id();
 
-        return roomsService.addNewTenant(room_id, property_id, tenant_id);
+        Room createdRoom = roomsService.addNewTenant(room_id, property_id, tenant_id);
+        return new ResponseEntity<>(new StatusAndMessageResponse(HttpStatus.OK, createdRoom.toString()), HttpStatus.CREATED);
     }
 
 
@@ -83,6 +85,7 @@ public class VendorController {
 
         return roomsService.deleteTenant(room_id, property_id, tenant_id);
     }
+
 
     @PostMapping("/announcement")
     public ResponseEntity<StatusAndMessageResponse> addNewAnnouncement(@RequestBody AnnouncementRequest announcementRequest){

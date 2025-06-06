@@ -1,5 +1,7 @@
 package com.PGmitra.app.Entity;
 
+import com.PGmitra.app.Enums.PaymentMethod;
+import com.PGmitra.app.Enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -18,22 +20,78 @@ import java.time.LocalDateTime;
 public class Payment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
 
-    private BigDecimal amount; // CRITICAL: Added amount
-    private String status;
-    private LocalDate date; // Consider LocalDateTime if time is important
-    private String paymentMethod;
-    private int paymentForMonth; // e.g., 1 for Jan, 12 for Dec
-    private int paymentForYear;  // e.g., 2024
-    private LocalDate dueDate;
-    private Integer amountPaid;
-    private boolean paid;
-
-
     @ManyToOne(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
     private Tenant tenant;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
     private Owner owner;
+
+
+    private BigDecimal amount;
+    private Status status;
+    private LocalDate paidDate;
+    private PaymentMethod paymentMethod;
+    private LocalDate dueDate;
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Tenant getTenant() {
+        return tenant;
+    }
+
+    public void setTenant(Tenant tenant) {
+        this.tenant = tenant;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public LocalDate getPaidDate() {
+        return paidDate;
+    }
+
+    public void setPaidDate(LocalDate paidDate) {
+        this.paidDate = paidDate;
+    }
+
+
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
 
     public Owner getOwner() {
         return owner;

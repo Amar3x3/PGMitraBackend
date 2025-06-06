@@ -20,7 +20,7 @@ public class AnnouncementController {
     @Autowired AnnouncementService announcementService;
 
     @GetMapping("/owner/{ownerId}")
-    public ResponseEntity<Object> getAnnouncementsByOwner(@PathVariable Long ownerId, @PathVariable Long tenantId) {
+    public ResponseEntity<Object> getAnnouncementsByOwner(@PathVariable Long ownerId) {
         try{
             List<AnnouncementDTO> announcements = announcementService.getAnnouncementsByOwner(ownerId);
             return new ResponseEntity<>(announcements, HttpStatus.OK);

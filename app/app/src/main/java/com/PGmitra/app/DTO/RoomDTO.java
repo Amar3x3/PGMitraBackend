@@ -17,6 +17,17 @@ public class RoomDTO {
     private BigDecimal rent; // Added this back as it's usually important
     private Property property;
 
+    @Override
+    public String toString() {
+        return "RoomDTO{" +
+                "room_no=" + room_no +
+                ", capacity=" + capacity +
+                ", occupied=" + occupied +
+                ", rent=" + rent +
+                ", property=" + property.getId() +
+                '}';
+    }
+
     public int getRoom_no() {
         return room_no;
     }

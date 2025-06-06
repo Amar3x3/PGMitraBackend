@@ -5,6 +5,7 @@ import com.PGmitra.app.Entity.Owner;
 import com.PGmitra.app.Entity.Property;
 import com.PGmitra.app.Entity.Room;
 import com.PGmitra.app.Entity.Tenant;
+import com.PGmitra.app.Exception.RoomCapacityFull;
 import com.PGmitra.app.Repository.PropertyRepo;
 import com.PGmitra.app.Repository.RoomsRepo;
 import com.PGmitra.app.Repository.TenantRepo;
@@ -56,7 +57,7 @@ public class RoomsService {
         return roomsRepo.findById(roomId);
     }
 
-    public ResponseEntity<Room> addNewTenant(long roomId, long propertyId, long tenantId) {
+    public Room addNewTenant(long roomId, long propertyId, long tenantId) throws RoomCapacityFull {
         Optional<Property> property = propertyService.getPropertyById(propertyId);
         Optional<Room> room = roomsRepo.findById(roomId);
         Optional<Tenant> tenant = tenantService.getTenantById(tenantId);
@@ -66,12 +67,18 @@ public class RoomsService {
        tenantList.add(tenant.get());
 
        room.get().setTenants(tenantList);
+       if (room.get().getOccupied() < room.get().getCapacity()){
+           room.get().setOccupied(room.get().getOccupied() + 1);
+       }
+       else{
+           throw new RoomCapacityFull("Room capacity is Full");
+       }
        tenant.get().setRoom(room.get());
        tenant.get().setOwner(owner.get());
 
        tenantRepo.save(tenant.get());
        roomsRepo.save(room.get());
-        return new ResponseEntity<>(room.get(), HttpStatus.CREATED);
+        return room.get();
     }
 
     public ResponseEntity<Room> deleteTenant(long roomId, long propertyId, long tenantId) {
