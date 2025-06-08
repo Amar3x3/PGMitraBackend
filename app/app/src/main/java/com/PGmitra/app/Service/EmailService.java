@@ -1,75 +1,57 @@
-//package com.PGmitra.app.Service;
-//
-//import jakarta.mail.Authenticator;
-//import jakarta.mail.PasswordAuthentication;
-//import java.util.Properties;
-//
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//
-//import com.PGmitra.app.Entity.Payment;
-//
-//import jakarta.mail.Message;
-//import jakarta.mail.MessagingException;
-//import jakarta.mail.Session;
-//import jakarta.mail.Transport;
-//import jakarta.mail.internet.InternetAddress;
-//import jakarta.mail.internet.MimeMessage;
-//
-//import org.springframework.mail.SimpleMailMessage;
-//import org.springframework.mail.javamail.JavaMailSender;
-//
-//@Service
-//
-//public class EmailService {
-//
-//    @Autowired
-//    private JavaMailSender mailSender;
-//
-//    public void sendReminderEmail(String toEmail, String tenantName, Payment payment) {
-//        String subject = "Rent Payment Reminder";
-//
-//        String body = "Dear" + tenantName + ",\n\n" + "This is a reminder that your rent of Rs" + payment.getAmountPaid() + "was due on " + payment.getDueDate() + ". Please make the payment at the earliest.\n\n" + "Thank you,\nPGMitra";
-//
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setTo(toEmail);
-//        message.setSubject(subject);
-//        message.setText(body);
-//
-//        mailSender.send(message);
-//    }
-//
-//    public void sendDynamicEmail(String fromEmail, String appPassword, String toEmail, String subject, String body) {
-//        Properties props = new Properties();
-//
-//        props.put("mail.smtp.auth", "true");
-//        props.put("mail.smtp.starttls.enable", "true");
-//        props.put("mail.smtp.host", "smtp.gmail.com");
-//        props.put("mail.smtp.port", "587");
-//
-//        Session session = Session.getInstance(props, new Authenticator() {
-//            @Override
-//            protected PasswordAuthentication getPasswordAuthentication() {
-//                return new PasswordAuthentication(fromEmail, appPassword);
-//            }
-//        });
-//        try{
-//            Message message = new MimeMessage(session);
-//            message.setFrom(new InternetAddress(fromEmail));
-//
-//            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-//
-//            message.setSubject(subject);
-//            message.setText(body);
-//
-//            Transport.send(message);
-//
-//        }
-//        catch (MessagingException e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//
-//    }
-//}
+package com.PGmitra.app.Service;
+
+import com.PGmitra.app.Entity.Payment;
+import com.PGmitra.app.Entity.Tenant;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Service;
+
+import java.time.format.DateTimeFormatter;
+
+@Service
+public class EmailService {
+
+    @Autowired
+    private JavaMailSender mailSender;
+
+    public void sendPaymentReminder(Tenant tenant, Payment payment, int daysUntilDue) {
+        String subject = "Rent Payment Reminder";
+        String message = buildReminderMessage(tenant, payment, daysUntilDue);
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(tenant.getEmail());
+        mailMessage.setSubject(subject);
+        mailMessage.setText(message);
+
+        mailSender.send(mailMessage);
+    }
+
+    private String buildReminderMessage(Tenant tenant, Payment payment, int daysUntilDue) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String dueDate = payment.getDueDate().format(formatter);
+        String amount = payment.getAmount().toString();
+
+        String greeting = "Dear " + tenant.getName() + ",\n\n";
+        String reminderText;
+        
+        if (daysUntilDue == 0) {
+            reminderText = "This is a reminder that your rent payment of Rs. " + amount + 
+                         " is due TODAY (" + dueDate + "). Please make the payment as soon as possible.\n\n";
+        } else {
+            reminderText = "This is a reminder that your rent payment of Rs. " + amount + 
+                         " is due in " + daysUntilDue + " days (" + dueDate + "). Please ensure timely payment.\n\n";
+        }
+
+        String paymentInfo = "Payment Details:\n" +
+                           "Amount: Rs. " + amount + "\n" +
+                           "Due Date: " + dueDate + "\n" +
+                           "Payment Method: " + payment.getPaymentMethod() + "\n\n";
+
+        String closing = "Thank you for your attention to this matter.\n\n" +
+                        "Best regards,\n" +
+                        "PGMitra Team";
+
+        return greeting + reminderText + paymentInfo + closing;
+    }
+}
