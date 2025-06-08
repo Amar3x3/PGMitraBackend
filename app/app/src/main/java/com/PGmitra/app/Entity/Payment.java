@@ -22,10 +22,12 @@ public class Payment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
+    @NonNull
     private Tenant tenant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
+    @NonNull
     private Owner owner;
 
 
