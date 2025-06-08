@@ -15,7 +15,6 @@ public class TenantDTO {
     private String phoneNumber;
     private String email;
     private String gender;
-    private String foodPreference;
 
     
     private String emergencyContactName;

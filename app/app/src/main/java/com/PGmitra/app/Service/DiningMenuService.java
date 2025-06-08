@@ -32,18 +32,18 @@ public class DiningMenuService {
 
     @Transactional
     public DiningMenu insertDummyDiningMenu(Long ownerId) {
-        // Retrieve an existing owner. Adjust the ownerId to one that exists in your DB.
+
         Owner dummyOwner = ownerRepository.findById(ownerId)
             .orElseThrow(() -> new ResourceNotFoundException("Owner with ID '" + ownerId + "' not found. Please ensure an owner with this ID exists for testing."));
 
         DiningMenu dummyMenu = new DiningMenu();
-        dummyMenu.setDate(LocalDate.now()); // Set to today's date
+        dummyMenu.setDate(LocalDate.now());
         dummyMenu.setText("Dummy Menu for Testing:\n" +
                           "Breakfast: Cereals, Milk\n" +
                           "Lunch: Sandwich, Fruit\n" +
-                          "Dinner: Pasta with Vegetables"); // Dummy menu content
+                          "Dinner: Pasta with Vegetables");
         dummyMenu.setOwner(dummyOwner);
-        dummyMenu.setCreatedAt(LocalDateTime.now()); // Set current timestamp
+        dummyMenu.setCreatedAt(LocalDateTime.now());
 
         return menuRepo.save(dummyMenu);
     }
