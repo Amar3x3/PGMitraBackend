@@ -1,6 +1,5 @@
 package com.PGmitra.app.DTO;
 
-
 import lombok.*;
 
 @Data
@@ -8,11 +7,12 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TenantProfileDTO {
-    private Long id;
-    private String email;
+public class TenantUpdateDTO {
+    private String name;
     private String phone;
     private String gender;
+    private String foodPreference;
+
     private String emergencyContactName;
     private String emergencyContactPhone;
     private String occupation; 

@@ -24,6 +24,11 @@ public class Tenant {
 
     private String foodPreference;
 
+    private String emergencyContactName;
+    private String emergencyContactPhone;
+    private String aadharNumber; 
+    private String occupation;
+
     public String getPhone() {
         return phone;
     }
