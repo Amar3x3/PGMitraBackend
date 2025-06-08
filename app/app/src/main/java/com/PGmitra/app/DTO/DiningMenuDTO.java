@@ -11,5 +11,7 @@ import lombok.*;
 
 public class DiningMenuDTO {
     private LocalDate date;
-    private String text;
+    private String Breakfast;
+    private String Lunch;
+    private String Dinner;
 }
