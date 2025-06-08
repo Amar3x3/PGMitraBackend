@@ -8,7 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FeedbackDTO {
-    private String text;
     private String title;
-    
+    private String text;    
 }
