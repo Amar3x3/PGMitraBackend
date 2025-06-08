@@ -32,7 +32,7 @@ public class DiningMenuService {
 
     @Transactional
     public DiningMenu insertDummyDiningMenu(Long ownerId) {
-        // Retrieve an existing owner. Adjust the ownerId to one that exists in your DB.
+
         Owner dummyOwner = ownerRepository.findById(ownerId)
             .orElseThrow(() -> new ResourceNotFoundException("Owner with ID '" + ownerId + "' not found. Please ensure an owner with this ID exists for testing."));
 
@@ -43,7 +43,7 @@ public class DiningMenuService {
         dummyMenu.setDinner("Pasta with Vegetables");
         
         dummyMenu.setOwner(dummyOwner);
-        dummyMenu.setCreatedAt(LocalDateTime.now()); // Set current timestamp
+        dummyMenu.setCreatedAt(LocalDateTime.now());
 
         return menuRepo.save(dummyMenu);
     }

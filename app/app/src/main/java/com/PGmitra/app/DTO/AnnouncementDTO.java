@@ -14,4 +14,5 @@ public class AnnouncementDTO {
     private String title;
     private String text;
     private LocalDateTime createdAt;
+
 }

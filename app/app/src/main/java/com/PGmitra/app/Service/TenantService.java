@@ -42,7 +42,7 @@ public class TenantService {
         tenant.setUsername(dto.getUserName());
         tenant.setPhone(dto.getPhoneNumber());
         tenant.setGender(dto.getGender());
-        tenant.setFoodPreference(dto.getFoodPreference());
+
         tenant.setPassword(dto.getPassword());
         tenant.setAadharNumber(dto.getAadharNumber());
         tenant.setEmergencyContactName(dto.getEmergencyContactName());
@@ -66,7 +66,8 @@ public class TenantService {
 
     public TenantProfileDTO getTenantProfile(Long tenantId) throws ResourceNotFoundException {
         Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new ResourceNotFoundException("Tenant with username '" + tenantId + "' not found"));
-        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getName(), tenant.getPhone(), tenant.getGender(), tenant.getFoodPreference(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation());
+        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getName(), tenant.getPhone(), tenant.getGender(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation());
+
     }
     
 

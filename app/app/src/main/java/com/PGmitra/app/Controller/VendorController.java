@@ -1,9 +1,11 @@
 package com.PGmitra.app.Controller;
 
 import com.PGmitra.app.DTO.OwnerDTO;
+import com.PGmitra.app.DTO.PropertyDTO;
 import com.PGmitra.app.DTO.RoomDTO;
 import com.PGmitra.app.Entity.*;
 import com.PGmitra.app.Exception.ResourceAlreadyExistsException;
+import com.PGmitra.app.Exception.RoomCapacityFull;
 import com.PGmitra.app.Response.*;
 import com.PGmitra.app.Service.PropertyService;
 import com.PGmitra.app.Service.RoomsService;
@@ -49,10 +51,10 @@ public class VendorController {
         else  return new LoginResponse(loginRequest.username(), "no user found", HttpStatus.FORBIDDEN);
     }
 
-    @PostMapping("/property")
-    public ResponseEntity<Property> createNewProperty(@RequestBody Property request){
+    @PostMapping("/property/{id}")
+    public ResponseEntity<Property> createNewProperty(@RequestBody PropertyDTO request, @PathVariable Long id){
 
-        Property createdProperty = propertyService.createNewProperty(request);
+        Property createdProperty = propertyService.createNewProperty(request, id);
         return new ResponseEntity<>(createdProperty, HttpStatus.CREATED);
     }
 
@@ -65,25 +67,36 @@ public class VendorController {
     }
 
     @PostMapping("/addNewTenant")
-    public ResponseEntity<Room> addNewMember(@RequestBody RoomMemberRequest roomMemberRequest){
+    public ResponseEntity<StatusAndMessageResponse> addNewMember(@RequestBody RoomMemberRequest roomMemberRequest) throws RoomCapacityFull {
         long room_id = roomMemberRequest.room_id();
         long property_id = roomMemberRequest.property_id();
         long tenant_id = roomMemberRequest.tenant_id();
-        return roomsService.addNewTenant(room_id, property_id, tenant_id);
+
+        Room createdRoom = roomsService.addNewTenant(room_id, property_id, tenant_id);
+        return new ResponseEntity<>(new StatusAndMessageResponse(HttpStatus.OK, createdRoom.toString()), HttpStatus.CREATED);
     }
+
+
     @PostMapping("/deleteTenant")
     public ResponseEntity<Room> deleteTenant(@RequestBody RoomMemberRequest roomMemberRequest){
         long room_id = roomMemberRequest.room_id();
         long property_id = roomMemberRequest.property_id();
         long tenant_id = roomMemberRequest.tenant_id();
+
         return roomsService.deleteTenant(room_id, property_id, tenant_id);
     }
+
 
     @PostMapping("/announcement")
     public ResponseEntity<StatusAndMessageResponse> addNewAnnouncement(@RequestBody AnnouncementRequest announcementRequest){
         Announcement announcement = vendorService.createNewAnnouncement(announcementRequest);
         return new ResponseEntity<>(new StatusAndMessageResponse(HttpStatus.OK, announcement.toString()), HttpStatus.CREATED);
     }
+
+//    @PostMapping("generateInvoice")
+//    public ResponseEntity<Payment> generateInvoiceForTenant(@RequestBody Payment payment){
+//        Payment payment =
+//    }
 
 
 

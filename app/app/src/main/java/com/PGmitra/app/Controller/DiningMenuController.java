@@ -29,7 +29,7 @@ public class DiningMenuController {
         return ResponseEntity.ok(menu);
     }
 
-    //For Testing purposes, to be removed later
+
     @PostMapping("/dummy/{ownerId}")
     public ResponseEntity<DiningMenu> createDummyDiningMenu(@PathVariable Long ownerId) {
         DiningMenu dummyMenu = diningMenuService.insertDummyDiningMenu(ownerId);

@@ -1,5 +1,7 @@
 package com.PGmitra.app.Entity;
 
+import com.PGmitra.app.Enums.PaymentMethod;
+import com.PGmitra.app.Enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -18,38 +20,27 @@ import java.time.LocalDateTime;
 public class Payment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
 
-    private BigDecimal amount; // CRITICAL: Added amount
-    private String status;
-    private LocalDate date; // Consider LocalDateTime if time is important
-    private String paymentMethod;
-    private int paymentForMonth; // e.g., 1 for Jan, 12 for Dec
-    private int paymentForYear;  // e.g., 2024
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    private Tenant tenant;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    private Owner owner;
+
+
+    private BigDecimal amount;
+    private Status status;
+    private LocalDate paidDate;
+    private PaymentMethod paymentMethod;
     private LocalDate dueDate;
-    private Integer amountPaid;
-    private boolean paid;
 
-    public boolean isPaid() {
-        return paid;
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
     }
 
-    public void setPaid(boolean paid) {
-        this.paid = paid;
-    }
-
-    public LocalDate getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public Integer getAmountPaid() {
-        return amountPaid;
-    }
-
-    public void setAmountPaid(Integer amountPaid) {
-        this.amountPaid = amountPaid;
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public Long getId() {
@@ -60,54 +51,6 @@ public class Payment {
         this.id = id;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-    public int getPaymentForMonth() {
-        return paymentForMonth;
-    }
-
-    public void setPaymentForMonth(int paymentForMonth) {
-        this.paymentForMonth = paymentForMonth;
-    }
-
-    public int getPaymentForYear() {
-        return paymentForYear;
-    }
-
-    public void setPaymentForYear(int paymentForYear) {
-        this.paymentForYear = paymentForYear;
-    }
-
     public Tenant getTenant() {
         return tenant;
     }
@@ -116,7 +59,46 @@ public class Payment {
         this.tenant = tenant;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tenant_id", nullable = false)
-    private Tenant tenant;
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public LocalDate getPaidDate() {
+        return paidDate;
+    }
+
+    public void setPaidDate(LocalDate paidDate) {
+        this.paidDate = paidDate;
+    }
+
+
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Owner getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Owner owner) {
+        this.owner = owner;
+    }
+
 }
