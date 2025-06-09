@@ -11,11 +11,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
+    private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
     @Autowired
     private VenderRepo ownerRepository;
@@ -24,27 +27,32 @@ public class CustomUserDetailsService implements UserDetailsService {
     private TenantRepo tenantRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        logger.debug("Attempting to load user with username: {}", username);
+
         // Try to find owner first
-        var owner = ownerRepository.findByEmail(email);
+        var owner = ownerRepository.findByUsername(username);
         if (owner.isPresent()) {
+            logger.debug("Found owner with username: {}", username);
             return new User(
-                owner.get().getEmail(),
+                owner.get().getUsername(),
                 owner.get().getPassword(),
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_OWNER"))
             );
         }
 
         // If not found as owner, try to find as tenant
-        var tenant = tenantRepository.findByEmail(email);
+        var tenant = tenantRepository.findByUsername(username);
         if (tenant.isPresent()) {
+            logger.debug("Found tenant with username: {}", username);
             return new User(
-                tenant.get().getEmail(),
+                tenant.get().getUsername(),
                 tenant.get().getPassword(),
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_TENANT"))
             );
         }
 
-        throw new UsernameNotFoundException("User not found with email: " + email);
+        logger.debug("No user found with username: {}", username);
+        throw new UsernameNotFoundException("User not found with username: " + username);
     }
 } 

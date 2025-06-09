@@ -57,20 +57,20 @@ public class VendorController {
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Object> loginOwner(@RequestBody LoginRequest loginRequest) {
-        try {
-            boolean login = vendorService.loginOwner(loginRequest.username(), loginRequest.password());
-            if (login) {
-                return ResponseEntity.ok(new LoginResponse(loginRequest.username(), "Login successful", HttpStatus.OK));
-            }
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(new LoginResponse(loginRequest.username(), "Invalid credentials", HttpStatus.FORBIDDEN));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
-        }
-    }
+    // @PostMapping("/login")
+    // public ResponseEntity<Object> loginOwner(@RequestBody LoginRequest loginRequest) {
+    //     try {
+    //         boolean login = vendorService.loginOwner(loginRequest.username(), loginRequest.password());
+    //         if (login) {
+    //             return ResponseEntity.ok(new LoginResponse(loginRequest.username(), "Login successful", HttpStatus.OK));
+    //         }
+    //         return ResponseEntity.status(HttpStatus.FORBIDDEN)
+    //             .body(new LoginResponse(loginRequest.username(), "Invalid credentials", HttpStatus.FORBIDDEN));
+    //     } catch (Exception ex) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    //             .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
+    //     }
+    // }
 
     @PostMapping("/property/{id}")
     public ResponseEntity<Object> createNewProperty(@RequestBody PropertyDTO request, @PathVariable Long id) {
