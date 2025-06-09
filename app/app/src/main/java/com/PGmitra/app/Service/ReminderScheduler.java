@@ -34,15 +34,15 @@ public class ReminderScheduler {
             LocalDate dueDate = payment.getDueDate();
             Tenant tenant = payment.getTenant();
 
-            // Send reminders based on due date
+           
             if (dueDate.equals(today)) {
-                // Due today
+                
                 emailService.sendPaymentReminder(tenant, payment, 0);
             } else if (dueDate.equals(tomorrow)) {
-                // Due tomorrow
+               
                 emailService.sendPaymentReminder(tenant, payment, 1);
             } else if (dueDate.equals(dayAfterTomorrow)) {
-                // Due day after tomorrow
+               
                 emailService.sendPaymentReminder(tenant, payment, 2);
             }
         }
