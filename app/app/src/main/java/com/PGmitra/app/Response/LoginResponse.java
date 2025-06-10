@@ -1,7 +1,29 @@
 package com.PGmitra.app.Response;
 
+import lombok.Data;
 import org.springframework.http.HttpStatus;
 
-public record LoginResponse (String username, String message, HttpStatus httpStatus){
+@Data
+public class LoginResponse {
+    private String username;
+    private String accessToken;
+    private String refreshToken;
+    private HttpStatus status;
+    private String message;
 
+    public LoginResponse(String username, String accessToken, String refreshToken, HttpStatus status) {
+        this.username = username;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.status = status;
+        this.message = "Login successful";
+    }
+
+    public LoginResponse(String username, HttpStatus status, String message) {
+        this.username = username;
+        this.accessToken = null;
+        this.refreshToken = null;
+        this.status = status;
+        this.message = message;
+    }
 }

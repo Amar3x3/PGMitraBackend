@@ -10,6 +10,7 @@ import com.PGmitra.app.Repository.VenderRepo;
 import com.PGmitra.app.Response.AnnouncementRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -22,6 +23,9 @@ public class VendorService {
     @Autowired
     private AnnouncementRepo announcementRepo;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public Owner createVendor(OwnerDTO request) throws ResourceAlreadyExistsException{
         if (ownerRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new ResourceAlreadyExistsException("Username " + request.getUsername() + " already taken!");
@@ -33,7 +37,7 @@ public class VendorService {
         Owner owner = new Owner();
         owner.setName(request.getName());
         owner.setUsername(request.getUsername());
-        owner.setPassword(request.getPassword()); // Hashing the password is remaining (will do it during auth)
+        owner.setPassword(passwordEncoder.encode(request.getPassword())); // Encrypt password
         owner.setPhone(request.getPhone());
         owner.setEmail(request.getEmail());
 
@@ -44,8 +48,7 @@ public class VendorService {
     public boolean loginOwner(String username, String password){
         Optional<Owner> owner = ownerRepository.findByUsername(username);
         if(owner.isEmpty()) return false;
-        if(owner.get().getPassword().equals(password)) return true;
-        return false;
+        return passwordEncoder.matches(password, owner.get().getPassword());
     }
 
 

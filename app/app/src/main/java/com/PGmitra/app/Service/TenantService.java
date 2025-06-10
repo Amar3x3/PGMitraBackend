@@ -3,13 +3,10 @@ package com.PGmitra.app.Service;
 import com.PGmitra.app.Entity.Tenant;
 import com.PGmitra.app.Repository.TenantRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.PGmitra.app.DTO.TenantDTO;
 import com.PGmitra.app.DTO.TenantProfileDTO;
@@ -20,12 +17,14 @@ import com.PGmitra.app.Exception.ResourceAlreadyExistsException;
 import com.PGmitra.app.Exception.ResourceNotFoundException;
 import com.PGmitra.app.Repository.TenantRepo;
 
-
 @Service
 public class TenantService {
 
     @Autowired
     private TenantRepo tenantRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public Tenant createTenant(TenantDTO dto) throws ResourceAlreadyExistsException {
         if (tenantRepository.findByUsername(dto.getUserName()).isPresent()) {
@@ -43,7 +42,7 @@ public class TenantService {
         tenant.setPhone(dto.getPhoneNumber());
         tenant.setGender(dto.getGender());
 
-        tenant.setPassword(dto.getPassword());
+        tenant.setPassword(passwordEncoder.encode(dto.getPassword()));
         tenant.setAadharNumber(dto.getAadharNumber());
         tenant.setEmergencyContactName(dto.getEmergencyContactName());
         tenant.setEmergencyContactPhone(dto.getEmergencyContactPhone());
@@ -55,8 +54,7 @@ public class TenantService {
     public boolean loginTenant(String username, String password){
         Optional<Tenant> tenant = tenantRepository.findByUsername(username);
         if(tenant.isEmpty()) return false;
-        if(tenant.get().getPassword().equals(password)) return true;
-        return false;
+        return passwordEncoder.matches(password, tenant.get().getPassword());
     }
 
     public TenantProfileDTO getTenantProfile(String username) throws ResourceNotFoundException {

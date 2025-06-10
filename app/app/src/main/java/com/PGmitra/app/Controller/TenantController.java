@@ -52,13 +52,13 @@ public class TenantController {
         return new ResponseEntity<>(createdTenant, HttpStatus.CREATED);
     }
 
-    @PostMapping("/login")
-    public LoginResponse loginTenant(@RequestBody LoginRequest loginRequest){
-        boolean login = tenantService.loginTenant(loginRequest.username(), loginRequest.password());
-        if(login)
-            return new LoginResponse(loginRequest.username(), "login succesful", HttpStatus.OK);
-        else  return new LoginResponse(loginRequest.username(), "no user found", HttpStatus.FORBIDDEN);
-    }
+    // @PostMapping("/login")
+    // public LoginResponse loginTenant(@RequestBody LoginRequest loginRequest){
+    //     boolean login = tenantService.loginTenant(loginRequest.username(), loginRequest.password());
+    //     if(login)
+    //         return new LoginResponse(loginRequest.username(), "login succesful", HttpStatus.OK);
+    //     else  return new LoginResponse(loginRequest.username(), "no user found", HttpStatus.FORBIDDEN);
+    // }
 
     @GetMapping("/profile/{username}")
     public ResponseEntity<?> getTenantProfile(@PathVariable String username) {
