@@ -26,7 +26,7 @@ public class DiningMenuService {
     public DiningMenuDTO getMenuByDateAndOwner(Long OwnerId, LocalDate date) {
         DiningMenu menu = menuRepo.findByOwnerIdAndDate(OwnerId, date).orElseThrow(() -> new ResourceNotFoundException("Dining menu not found for date" + date));
 
-        return new DiningMenuDTO(menu.getDate(), menu.getText());
+        return new DiningMenuDTO(menu.getDate(), menu.getBreakfast(), menu.getLunch(), menu.getDinner());
 
     }
 
@@ -37,11 +37,11 @@ public class DiningMenuService {
             .orElseThrow(() -> new ResourceNotFoundException("Owner with ID '" + ownerId + "' not found. Please ensure an owner with this ID exists for testing."));
 
         DiningMenu dummyMenu = new DiningMenu();
-        dummyMenu.setDate(LocalDate.now());
-        dummyMenu.setText("Dummy Menu for Testing:\n" +
-                          "Breakfast: Cereals, Milk\n" +
-                          "Lunch: Sandwich, Fruit\n" +
-                          "Dinner: Pasta with Vegetables");
+        dummyMenu.setDate(LocalDate.now()); // Set to today's date
+        dummyMenu.setBreakfast("Breakfast: Cereals, Milk");
+        dummyMenu.setLunch("Sandwich, Fruit");
+        dummyMenu.setDinner("Pasta with Vegetables");
+        
         dummyMenu.setOwner(dummyOwner);
         dummyMenu.setCreatedAt(LocalDateTime.now());
 

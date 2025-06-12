@@ -70,6 +70,18 @@ public class TenantController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
+
+    @GetMapping("/profile/id/{tenantId}")
+    public ResponseEntity<?> getTenantProfile(@PathVariable Long tenantId) {
+        try {
+            TenantProfileDTO profile = tenantService.getTenantProfile(tenantId);
+            return new ResponseEntity<>(profile, HttpStatus.OK);
+        }
+        catch(ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
     
     @PostMapping("/feedback")
     public ResponseEntity<Object> submitFeedback(@RequestBody FeedbackDTO dto, @RequestParam Long tenantId) { //To be replaced by authenticated ID later 
@@ -84,7 +96,6 @@ public class TenantController {
 
     @PutMapping("update/{tenantId}")
     public ResponseEntity<Object> updateTenant(@PathVariable Long tenantId, @RequestBody TenantUpdateDTO dto) {
-        //TODO: process PUT request
         try{
             tenantService.updateTenantDetails(tenantId, dto);
             return ResponseEntity.status(HttpStatus.OK).body("Details updated Successfully!");

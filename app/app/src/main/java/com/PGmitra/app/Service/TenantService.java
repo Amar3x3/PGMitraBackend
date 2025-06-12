@@ -59,7 +59,12 @@ public class TenantService {
 
     public TenantProfileDTO getTenantProfile(String username) throws ResourceNotFoundException {
         Tenant tenant = tenantRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("Tenant with username '" + username + "' not found"));
-        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getPhone(), tenant.getGender(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation());
+        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getName(), tenant.getPhone(), tenant.getGender(), tenant.getFoodPreference(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation());
+    }
+
+    public TenantProfileDTO getTenantProfile(Long tenantId) throws ResourceNotFoundException {
+        Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new ResourceNotFoundException("Tenant with username '" + tenantId + "' not found"));
+        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getName(), tenant.getPhone(), tenant.getGender(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation());
 
     }
     
