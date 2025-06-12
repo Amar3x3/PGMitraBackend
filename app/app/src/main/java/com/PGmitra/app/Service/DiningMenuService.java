@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import com.PGmitra.app.DTO.DiningMenuDTO;
 import com.PGmitra.app.Entity.DiningMenu;
 import com.PGmitra.app.Entity.Owner;
+import com.PGmitra.app.Entity.Tenant;
 import com.PGmitra.app.Exception.ResourceNotFoundException;
 import com.PGmitra.app.Repository.DiningMenuRepo;
+import com.PGmitra.app.Repository.TenantRepo;
 import com.PGmitra.app.Repository.VenderRepo;
 
 import jakarta.transaction.Transactional;
@@ -22,6 +24,9 @@ public class DiningMenuService {
 
     @Autowired
     private VenderRepo ownerRepository;
+
+    @Autowired
+    private TenantRepo tenantRepo;
 
     public DiningMenuDTO getMenuByDateAndOwner(Long OwnerId, LocalDate date) {
         DiningMenu menu = menuRepo.findByOwnerIdAndDate(OwnerId, date).orElseThrow(() -> new ResourceNotFoundException("Dining menu not found for date" + date));
@@ -72,6 +77,20 @@ public class DiningMenuService {
             menu.setDinner(dto.getDinner());
         }
         menuRepo.save(menu);
+    }
+
+    public DiningMenuDTO getMenuByDateAndTenant(Long tenantId) {
+        Tenant tenant = tenantRepo.findById(tenantId).orElseThrow(() -> new ResourceNotFoundException("No menu associated with tenant with ID: " + tenantId));
+        Owner owner =null;
+        if (tenant.getOwner() != null) {
+            owner = tenant.getOwner();
+        } else {
+            throw new ResourceNotFoundException("No owner associated with the tenant with ID:" + tenantId);
+        }
+
+        DiningMenu menu = menuRepo.findByOwnerIdAndDate(owner.getId(), LocalDate.now()).orElseThrow(() -> new ResourceNotFoundException("Dining menu not found for date" + LocalDate.now()));
+        
+        return new DiningMenuDTO(menu.getId(), menu.getDate(), menu.getBreakfast(), menu.getLunch(), menu.getDinner(), menu.getOwner().getId());
     }
 
 

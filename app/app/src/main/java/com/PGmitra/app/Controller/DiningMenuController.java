@@ -60,6 +60,19 @@ public class DiningMenuController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
     }
+
+    @GetMapping("/tenant/{tenantId}")
+    public ResponseEntity<Object> getTenantMenuByDate(@PathVariable Long tenantId) {
+        try {
+            DiningMenuDTO menu = diningMenuService.getMenuByDateAndTenant(tenantId);
+            return ResponseEntity.ok(menu);
+        } catch(ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch(Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
+    }
+    
     
     
 }

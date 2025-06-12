@@ -31,4 +31,18 @@ public class AnnouncementController {
         
     }
 
+    @GetMapping("/tenant/{tenantId}")
+    public ResponseEntity<Object> getAnnouncementsByTenant(@PathVariable Long tenantId) {
+        try{
+            List<AnnouncementDTO> announcements = announcementService.getAnnouncementsByTenant(tenantId);
+            return new ResponseEntity<>(announcements, HttpStatus.OK);
+        }
+        catch(ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+        
+    }
+
+
+
 }

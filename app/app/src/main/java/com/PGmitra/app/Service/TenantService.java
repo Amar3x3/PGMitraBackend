@@ -59,12 +59,20 @@ public class TenantService {
 
     public TenantProfileDTO getTenantProfile(String username) throws ResourceNotFoundException {
         Tenant tenant = tenantRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("Tenant with username '" + username + "' not found"));
-        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getName(), tenant.getPhone(), tenant.getGender(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation());  //Remodelled, as foodPreference removed from tenantProfileDTO
+        Integer room_no = null;
+        if (tenant.getRoom() != null) {
+            room_no = tenant.getRoom().getRoom_no();
+        }
+        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getName(), tenant.getPhone(), tenant.getGender(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation(), room_no);  //Remodelled, as foodPreference removed from tenantProfileDTO
     }
 
     public TenantProfileDTO getTenantProfile(Long tenantId) throws ResourceNotFoundException {
         Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new ResourceNotFoundException("Tenant with username '" + tenantId + "' not found"));
-        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getName(), tenant.getPhone(), tenant.getGender(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation());
+        Integer room_no = null;
+        if (tenant.getRoom() != null) {
+            room_no = tenant.getRoom().getRoom_no();
+        }
+        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getName(), tenant.getPhone(), tenant.getGender(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation(), room_no);
 
     }
     
