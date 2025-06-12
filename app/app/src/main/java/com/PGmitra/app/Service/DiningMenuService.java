@@ -26,7 +26,7 @@ public class DiningMenuService {
     public DiningMenuDTO getMenuByDateAndOwner(Long OwnerId, LocalDate date) {
         DiningMenu menu = menuRepo.findByOwnerIdAndDate(OwnerId, date).orElseThrow(() -> new ResourceNotFoundException("Dining menu not found for date" + date));
 
-        return new DiningMenuDTO(menu.getDate(), menu.getBreakfast(), menu.getLunch(), menu.getDinner());
+        return new DiningMenuDTO(menu.getId(), menu.getDate(), menu.getBreakfast(), menu.getLunch(), menu.getDinner(), menu.getOwner().getId());
 
     }
 
@@ -46,6 +46,32 @@ public class DiningMenuService {
         dummyMenu.setCreatedAt(LocalDateTime.now());
 
         return menuRepo.save(dummyMenu);
+    }
+
+    public void createMenu(DiningMenuDTO dto) {
+        Owner owner = ownerRepository.findById(dto.getOwnerId()).orElseThrow(() -> new ResourceNotFoundException("Owner not found with ID:" + dto.getOwnerId()));
+
+        DiningMenu menu = new DiningMenu();
+        menu.setDate(dto.getDate());
+        menu.setBreakfast(dto.getBreakfast());
+        menu.setLunch(dto.getLunch());
+        menu.setDinner(dto.getDinner());
+        menu.setOwner(owner);
+        menuRepo.save(menu);
+    }
+
+    public void editMenu(DiningMenuDTO dto) {
+        DiningMenu menu = menuRepo.findById(dto.getId()).orElseThrow(() -> new ResourceNotFoundException("Menu with not found with ID: " + dto.getId()));
+        if (dto.getBreakfast() != null) {
+            menu.setBreakfast(dto.getBreakfast());
+        }
+        if (dto.getLunch() != null) {
+            menu.setLunch(dto.getLunch());
+        }
+        if (dto.getDinner() != null) {
+            menu.setDinner(dto.getDinner());
+        }
+        menuRepo.save(menu);
     }
 
 

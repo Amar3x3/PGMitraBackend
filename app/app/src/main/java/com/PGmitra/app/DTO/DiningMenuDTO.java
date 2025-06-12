@@ -10,8 +10,10 @@ import lombok.*;
 @NoArgsConstructor
 
 public class DiningMenuDTO {
+    private Long id;
     private LocalDate date;
     private String Breakfast;
     private String Lunch;
     private String Dinner;
+    Long ownerId;
 }

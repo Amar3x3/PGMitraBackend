@@ -1,5 +1,9 @@
 package com.PGmitra.app.Controller;
 
+import com.PGmitra.app.DTO.FeedbackDTO;
+import com.PGmitra.app.DTO.FeedbackViewDTO;
+import com.PGmitra.app.DTO.FeedbackDTO;
+import com.PGmitra.app.DTO.FeedbackViewDTO;
 import com.PGmitra.app.DTO.OwnerDTO;
 import com.PGmitra.app.DTO.PaymentDTO;
 import com.PGmitra.app.DTO.PropertyDTO;
@@ -11,6 +15,7 @@ import com.PGmitra.app.Exception.ResourceNotFoundException;
 import com.PGmitra.app.Exception.RoomCapacityFull;
 import com.PGmitra.app.Response.*;
 import com.PGmitra.app.Service.PaymentService;
+import com.PGmitra.app.Service.FeedbackService;
 import com.PGmitra.app.Service.PropertyService;
 import com.PGmitra.app.Service.RoomsService;
 import com.PGmitra.app.Service.VendorService;
@@ -21,6 +26,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+
+
 
 @RestController
 @RequestMapping("/api/vendor")
@@ -37,6 +49,9 @@ public class VendorController {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired 
+    private FeedbackService feedbackService;
 
     @GetMapping("/hello")
     public String hello(){
@@ -85,6 +100,7 @@ public class VendorController {
                 .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
         }
     }
+    
 
     @PostMapping("/room/{id}")
     public ResponseEntity<Object> createNewRoom(@RequestBody RoomDTO roomDTO, @PathVariable Long id) {
@@ -104,7 +120,7 @@ public class VendorController {
                 .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
         }
     }
-
+    
     @PostMapping("/addNewTenant")
     public ResponseEntity<Object> addNewMember(@RequestBody RoomMemberRequest roomMemberRequest) {
         try {
@@ -125,6 +141,7 @@ public class VendorController {
                 .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
         }
     }
+            
 
     @PostMapping("/deleteTenant")
     public ResponseEntity<Object> deleteTenant(@RequestBody RoomMemberRequest roomMemberRequest) {
@@ -132,7 +149,6 @@ public class VendorController {
             long room_id = roomMemberRequest.room_id();
             long property_id = roomMemberRequest.property_id();
             long tenant_id = roomMemberRequest.tenant_id();
-
             ResponseEntity<Room> response = roomsService.deleteTenant(room_id, property_id, tenant_id);
             return ResponseEntity.ok(response.getBody());
         } catch (ResourceNotFoundException ex) {
@@ -201,4 +217,26 @@ public class VendorController {
                 .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
         }
     }
+
+    @GetMapping("/complaints/{ownerId}")
+    public ResponseEntity<Object> getComplaints(@PathVariable Long ownerId) {
+        try {
+            List<FeedbackViewDTO> feedbackList = feedbackService.getAllFeedbackByOwner(ownerId);
+            return new ResponseEntity<>(feedbackList, HttpStatus.OK);
+        } catch(ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+
+    }
+
+    @PutMapping("/complaints/{id}/complete")
+    public ResponseEntity<Object> markComplaintAsComplete(@PathVariable Long id) {
+        try{
+            feedbackService.markAsComplete(id);
+            return ResponseEntity.ok("Complaint marked as fixed");
+        } catch(ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+    
 }
