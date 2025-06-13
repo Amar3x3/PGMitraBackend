@@ -143,7 +143,7 @@ public class VendorController {
             }
             roomDTO.setProperty(property.get());
             Room createdRoom = roomsService.createRoom(roomDTO);
-            RoomResponse roomResponse = new RoomResponse(createdRoom.getId(), createdRoom.getCapacity(), createdRoom.getOccupied(), createdRoom.getRent());
+            RoomResponse roomResponse = new RoomResponse(createdRoom.getRoom_no(), createdRoom.getId(), createdRoom.getCapacity(), createdRoom.getOccupied(), createdRoom.getRent());
             return new ResponseEntity<>(roomResponse, HttpStatus.CREATED);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -162,7 +162,7 @@ public class VendorController {
             }
             roomDTO.setProperty(property.get());
             Room createdRoom = roomsService.createRoom(roomDTO);
-            RoomResponse roomResponse = new RoomResponse(createdRoom.getId(), createdRoom.getCapacity(), createdRoom.getOccupied(), createdRoom.getRent());
+            RoomResponse roomResponse = new RoomResponse(createdRoom.getRoom_no(), createdRoom.getId(), createdRoom.getCapacity(), createdRoom.getOccupied(), createdRoom.getRent());
             return new ResponseEntity<>(roomResponse, HttpStatus.CREATED);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -181,7 +181,7 @@ public class VendorController {
             long tenant_id = roomMemberRequest.tenant_id();
 
             Room createdRoom = roomsService.addNewTenant(room_id, property_id, tenant_id);
-            RoomResponse roomResponse = new RoomResponse(createdRoom.getId(), createdRoom.getOccupied(), createdRoom.getCapacity(), createdRoom.getRent());
+            RoomResponse roomResponse = new RoomResponse(createdRoom.getRoom_no(), createdRoom.getId(), createdRoom.getOccupied(), createdRoom.getCapacity(), createdRoom.getRent());
             return new ResponseEntity<>(roomResponse, HttpStatus.CREATED);
         } catch (RoomCapacityFull ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -391,6 +391,7 @@ public class VendorController {
         try {
             Room updatedRoom = roomsService.updateRoom(roomId, roomDTO);
             RoomResponse roomResponse = new RoomResponse(
+                updatedRoom.getRoom_no(),
                 updatedRoom.getId(),
                 updatedRoom.getCapacity(),
                 updatedRoom.getOccupied(),
