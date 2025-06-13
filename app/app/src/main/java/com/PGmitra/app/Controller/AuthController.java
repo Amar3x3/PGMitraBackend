@@ -8,7 +8,9 @@ import com.PGmitra.app.Exception.ResourceAlreadyExistsException;
 import com.PGmitra.app.Response.LoginRequest;
 import com.PGmitra.app.Response.LoginResponse;
 import com.PGmitra.app.Response.StatusAndMessageResponse;
+
 import com.PGmitra.app.Security.CustomUserDetails;
+
 import com.PGmitra.app.Security.CustomUserDetailsService;
 import com.PGmitra.app.Security.JwtTokenProvider;
 import com.PGmitra.app.Service.TenantService;
@@ -23,6 +25,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,6 +49,8 @@ public class AuthController {
 
     @Autowired
     CustomUserDetailsService customUserDetailsService;
+
+
 
 
     @PostMapping("/register/owner")
@@ -125,7 +132,7 @@ public class AuthController {
 
             if (!tokenProvider.validateToken(refreshToken) || !tokenProvider.isRefreshToken(refreshToken)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new LoginResponse(null, HttpStatus.UNAUTHORIZED, "Invalid refresh token"));
+                        .body(new LoginResponse(null, HttpStatus.UNAUTHORIZED, "Invalid refresh token"));
             }
 
             String username = tokenProvider.getUsernameFromJWT(refreshToken);
@@ -138,15 +145,16 @@ public class AuthController {
             UsernamePasswordAuthenticationToken authenticationToken = 
                 new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
             
+
             // Generate new tokens
             String newAccessToken = tokenProvider.generateAccessToken(authenticationToken);
-            String newRefreshToken = tokenProvider.generateRefreshToken(authenticationToken);
+            String newRefreshToken = tokenProvider.generateRefreshToken(authenticationToken); // If refresh token should also be refreshed
 
             return ResponseEntity.ok(new LoginResponse(username, newAccessToken, newRefreshToken, HttpStatus.OK, userId));
         } catch (Exception ex) {
             logger.error("Token refresh failed. Error: {}", ex.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new LoginResponse(null, HttpStatus.UNAUTHORIZED, "Invalid refresh token"));
+                    .body(new LoginResponse(null, HttpStatus.UNAUTHORIZED, "Invalid refresh token or internal error."));
         }
     }
 } 

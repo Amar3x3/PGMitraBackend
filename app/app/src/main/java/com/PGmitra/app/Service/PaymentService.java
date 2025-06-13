@@ -28,22 +28,22 @@ public class PaymentService {
     private VenderRepo ownerRepo;
 
     public Payment createPayment(PaymentDTO paymentDTO) {
-        // Find tenant and owner
+
         Tenant tenant = tenantRepo.findById(paymentDTO.getTenantId())
             .orElseThrow(() -> new ResourceNotFoundException("Tenant not found with id: " + paymentDTO.getTenantId()));
         
         Owner owner = ownerRepo.findById(paymentDTO.getOwnerId())
             .orElseThrow(() -> new ResourceNotFoundException("Owner not found with id: " + paymentDTO.getOwnerId()));
 
-        // Create new payment
+
         Payment payment = new Payment();
         payment.setTenant(tenant);
         payment.setOwner(owner);
         payment.setAmount(paymentDTO.getAmount());
         payment.setPaymentMethod(paymentDTO.getPaymentMethod());
         payment.setDueDate(paymentDTO.getDueDate());
-        payment.setStatus(Status.INCOMPLETE); // Initial status is incomplete
-        payment.setPaidDate(null); // Will be set when payment is made
+        payment.setStatus(Status.INCOMPLETE);
+        payment.setPaidDate(null);
 
         return paymentRepo.save(payment);
     }

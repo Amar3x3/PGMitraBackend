@@ -76,8 +76,9 @@ public class RoomsService {
        tenant.get().setRoom(room.get());
        tenant.get().setOwner(owner.get());
 
-       tenantRepo.save(tenant.get());
+
        roomsRepo.save(room.get());
+       tenantRepo.save(tenant.get());
         return room.get();
     }
 
@@ -85,9 +86,10 @@ public class RoomsService {
         Optional<Property> property = propertyService.getPropertyById(propertyId);
         Optional<Room> room = roomsRepo.findById(roomId);
         Optional<Tenant> tenant = tenantService.getTenantById(tenantId);
-        List<Tenant> tenantList =  room.get().getTenants();
-        tenantList.remove(tenant.get());
-        room.get().setTenants(tenantList);
+//        List<Tenant> tenantList =  room.get().getTenants();
+//        tenantList.remove(tenant.get());
+//        room.get().setTenants(tenantList);
+        room.get().setOccupied(room.get().getOccupied() - 1);
         roomsRepo.save(room.get());
         return new ResponseEntity<>(room.get(), HttpStatus.CREATED);
 
