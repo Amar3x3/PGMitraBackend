@@ -76,8 +76,9 @@ public class RoomsService {
        tenant.get().setRoom(room.get());
        tenant.get().setOwner(owner.get());
 
-       tenantRepo.save(tenant.get());
+
        roomsRepo.save(room.get());
+       tenantRepo.save(tenant.get());
         return room.get();
     }
 

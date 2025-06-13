@@ -14,23 +14,15 @@ import com.PGmitra.app.Exception.ResourceAlreadyExistsException;
 import com.PGmitra.app.Exception.ResourceNotFoundException;
 import com.PGmitra.app.Exception.RoomCapacityFull;
 import com.PGmitra.app.Response.*;
-import com.PGmitra.app.Service.PaymentService;
-import com.PGmitra.app.Service.FeedbackService;
-import com.PGmitra.app.Service.PropertyService;
-import com.PGmitra.app.Service.RoomsService;
-import com.PGmitra.app.Service.VendorService;
+import com.PGmitra.app.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
 
 
 
@@ -53,13 +45,16 @@ public class VendorController {
     @Autowired 
     private FeedbackService feedbackService;
 
-    @GetMapping("/hello")
+    @Autowired
+    private TenantService tenantService;
+
+
     public String hello(){
         return "hello from vendor api";
     }
-
     @PostMapping("/register")
-    public ResponseEntity<Object> createNewVendor(@RequestBody OwnerDTO ownerDTO) {
+      public ResponseEntity<Object> createNewVendor(@RequestBody OwnerDTO ownerDTO) {
+       
         try {
             Owner createdVendor = vendorService.createVendor(ownerDTO);
             return new ResponseEntity<>(createdVendor, HttpStatus.CREATED);
@@ -70,6 +65,19 @@ public class VendorController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
         }
+    }
+
+    @GetMapping("/allTenants/{owner_id}")
+    public ResponseEntity<Object> getAllTenants(@PathVariable Long owner_id){
+        List<Tenant> tenants = tenantService.getAllTenants(owner_id);
+        List<TenantResponse> tenantResponseList = new ArrayList<>();
+        if (tenants.isEmpty()) System.out.println("tenats empty");
+        for (Tenant it : tenants){
+            TenantResponse tenantResponse = new TenantResponse(it.getName(), it.getRoom().getRoom_no());
+            System.out.println(tenantResponse.toString());
+            tenantResponseList.add(tenantResponse);
+        }
+        return new ResponseEntity<>(tenantResponseList, HttpStatus.OK);
     }
 
     // @PostMapping("/login")
@@ -91,7 +99,9 @@ public class VendorController {
     public ResponseEntity<Object> createNewProperty(@RequestBody PropertyDTO request, @PathVariable Long id) {
         try {
             Property createdProperty = propertyService.createNewProperty(request, id);
-            return new ResponseEntity<>(createdProperty, HttpStatus.CREATED);
+            PropertyResponse  propertyResponse= new PropertyResponse(createdProperty.getId(), createdProperty.getName(), createdProperty.getAddress());
+
+            return new ResponseEntity<>(propertyResponse, HttpStatus.CREATED);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
@@ -111,7 +121,8 @@ public class VendorController {
             }
             roomDTO.setProperty(property.get());
             Room createdRoom = roomsService.createRoom(roomDTO);
-            return new ResponseEntity<>(new StatusAndMessageResponse(HttpStatus.OK, createdRoom.toString()), HttpStatus.CREATED);
+            RoomResponse roomResponse = new RoomResponse(createdRoom.getId(), createdRoom.getCapacity(), createdRoom.getOccupied(), createdRoom.getRent());
+            return new ResponseEntity<>(roomResponse, HttpStatus.CREATED);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
@@ -129,7 +140,8 @@ public class VendorController {
             long tenant_id = roomMemberRequest.tenant_id();
 
             Room createdRoom = roomsService.addNewTenant(room_id, property_id, tenant_id);
-            return new ResponseEntity<>(new StatusAndMessageResponse(HttpStatus.OK, createdRoom.toString()), HttpStatus.CREATED);
+            RoomResponse roomResponse = new RoomResponse(createdRoom.getId(), createdRoom.getOccupied(), createdRoom.getCapacity(), createdRoom.getRent());
+            return new ResponseEntity<>(roomResponse, HttpStatus.CREATED);
         } catch (RoomCapacityFull ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new StatusAndMessageResponse(HttpStatus.CONFLICT, ex.getMessage()));
@@ -138,7 +150,7 @@ public class VendorController {
                 .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
+                .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred" + ex.getMessage()));
         }
     }
             
@@ -178,7 +190,8 @@ public class VendorController {
     public ResponseEntity<Object> createPayment(@RequestBody PaymentDTO paymentDTO) {
         try {
             Payment payment = paymentService.createPayment(paymentDTO);
-            return new ResponseEntity<>(payment, HttpStatus.CREATED);
+            PaymentResponse paymentResponse = new PaymentResponse(payment.getId(), payment.getTenant().getName(), payment.getAmount(), payment.getStatus(), payment.getDueDate());
+            return new ResponseEntity<>(paymentResponse, HttpStatus.CREATED);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
@@ -192,7 +205,12 @@ public class VendorController {
     public ResponseEntity<Object> getPaymentsByOwner(@PathVariable Long ownerId) {
         try {
             List<Payment> payments = paymentService.getPaymentsByOwner(ownerId);
-            return ResponseEntity.ok(payments);
+            List<PaymentResponse> paymentResponses = new ArrayList<>();
+            for (Payment it : payments){
+                PaymentResponse paymentResponse = new PaymentResponse(it.getId(), it.getTenant().getName(), it.getAmount(), it.getStatus(), it.getDueDate());
+                paymentResponses.add(paymentResponse);
+            }
+            return ResponseEntity.ok(paymentResponses);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
