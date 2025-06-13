@@ -5,6 +5,7 @@ import com.PGmitra.app.Entity.Owner;
 import com.PGmitra.app.Entity.Property;
 import com.PGmitra.app.Entity.Room;
 import com.PGmitra.app.Entity.Tenant;
+import com.PGmitra.app.Exception.ResourceNotFoundException;
 import com.PGmitra.app.Exception.RoomCapacityFull;
 import com.PGmitra.app.Repository.PropertyRepo;
 import com.PGmitra.app.Repository.RoomsRepo;
@@ -93,5 +94,32 @@ public class RoomsService {
         roomsRepo.save(room.get());
         return new ResponseEntity<>(room.get(), HttpStatus.CREATED);
 
+    }
+
+    public void deleteRoom(Long id) {
+        Room room = roomsRepo.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + id));
+        
+        // Check if room has any tenants
+        if (room.getOccupied() > 0) {
+            throw new IllegalStateException("Cannot delete room with active tenants");
+        }
+        
+        roomsRepo.delete(room);
+    }
+
+    public Room updateRoom(Long id, RoomDTO roomDTO) {
+        Room room = roomsRepo.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + id));
+        
+        // Validate new capacity is not less than current occupancy
+        if (roomDTO.getCapacity() < room.getOccupied()) {
+            throw new IllegalStateException("New capacity cannot be less than current occupancy");
+        }
+        
+        room.setCapacity(roomDTO.getCapacity());
+        room.setRent(roomDTO.getRent());
+        
+        return roomsRepo.save(room);
     }
 }

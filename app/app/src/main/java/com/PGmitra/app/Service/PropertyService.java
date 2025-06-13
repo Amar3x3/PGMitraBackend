@@ -3,6 +3,7 @@ package com.PGmitra.app.Service;
 import com.PGmitra.app.DTO.PropertyDTO;
 import com.PGmitra.app.Entity.Owner;
 import com.PGmitra.app.Entity.Property;
+import com.PGmitra.app.Exception.ResourceNotFoundException;
 import com.PGmitra.app.Repository.PropertyRepo;
 import com.PGmitra.app.Repository.VenderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +40,21 @@ public class PropertyService {
     }
     public Optional<Property> getPropertyById(Long id){
         return propertyRepo.findById(id);
+    }
+
+    public void deleteProperty(Long id) {
+        Property property = propertyRepo.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Property not found with id: " + id));
+        propertyRepo.delete(property);
+    }
+
+    public Property updateProperty(Long id, PropertyDTO propertyDTO) {
+        Property property = propertyRepo.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Property not found with id: " + id));
+        
+        property.setName(propertyDTO.getName());
+        property.setAddress(propertyDTO.getAddress());
+        
+        return propertyRepo.save(property);
     }
 }

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
 
 
 
@@ -47,6 +48,9 @@ public class VendorController {
 
     @Autowired
     private TenantService tenantService;
+
+    @Autowired
+    private EmailService emailService;
 
 
     public String hello(){
@@ -291,6 +295,114 @@ public class VendorController {
             return ResponseEntity.ok("Complaint marked as fixed");
         } catch(ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
+    @PostMapping("/send-reminder/{tenantId}")
+    public ResponseEntity<Object> sendRentReminder(@PathVariable Long tenantId) {
+        try {
+            
+            Tenant tenant = tenantService.getTenantById(tenantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Tenant not found with id: " + tenantId));
+
+          
+            List<Payment> payments = paymentService.getPaymentsByTenant(tenantId);
+            Payment latestPayment = payments.stream()
+                .filter(p -> p.getStatus() == Status.INCOMPLETE)
+                .max((p1, p2) -> p1.getDueDate().compareTo(p2.getDueDate()))
+                .orElse(null);
+
+            if (latestPayment == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, "No pending payments found for this tenant"));
+            }
+
+            int daysUntilDue = (int) java.time.temporal.ChronoUnit.DAYS.between(
+                LocalDate.now(), 
+                latestPayment.getDueDate()
+            );
+
+           
+            emailService.sendPaymentReminder(tenant, latestPayment, daysUntilDue);
+
+            return ResponseEntity.ok(new StatusAndMessageResponse(HttpStatus.OK, "Rent reminder sent successfully"));
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/property/{propertyId}")
+    public ResponseEntity<Object> deleteProperty(@PathVariable Long propertyId) {
+        try {
+            propertyService.deleteProperty(propertyId);
+            return ResponseEntity.ok(new StatusAndMessageResponse(HttpStatus.OK, "Property deleted successfully"));
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
+        }
+    }
+
+    @PutMapping("/property/{propertyId}")
+    public ResponseEntity<Object> updateProperty(
+            @PathVariable Long propertyId,
+            @RequestBody PropertyDTO propertyDTO) {
+        try {
+            Property updatedProperty = propertyService.updateProperty(propertyId, propertyDTO);
+            PropertyResponse propertyResponse = new PropertyResponse(
+                updatedProperty.getId(),
+                updatedProperty.getName(),
+                updatedProperty.getAddress()
+            );
+            return ResponseEntity.ok(propertyResponse);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
+        }
+    }
+
+    @DeleteMapping("/room/{roomId}")
+    public ResponseEntity<Object> deleteRoom(@PathVariable Long roomId) {
+        try {
+            roomsService.deleteRoom(roomId);
+            return ResponseEntity.ok(new StatusAndMessageResponse(HttpStatus.OK, "Room deleted successfully"));
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
+        }
+    }
+
+    @PutMapping("/room/{roomId}")
+    public ResponseEntity<Object> updateRoom(
+            @PathVariable Long roomId,
+            @RequestBody RoomDTO roomDTO) {
+        try {
+            Room updatedRoom = roomsService.updateRoom(roomId, roomDTO);
+            RoomResponse roomResponse = new RoomResponse(
+                updatedRoom.getId(),
+                updatedRoom.getCapacity(),
+                updatedRoom.getOccupied(),
+                updatedRoom.getRent()
+            );
+            return ResponseEntity.ok(roomResponse);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
         }
     }
     

@@ -29,8 +29,8 @@ public class TenantService {
     private PasswordEncoder passwordEncoder;
 
     public Tenant createTenant(TenantDTO dto) throws ResourceAlreadyExistsException {
-        if (tenantRepository.findByUsername(dto.getUserName()).isPresent()) {
-            throw new ResourceAlreadyExistsException("Username " + dto.getUserName() + " already taken!");
+        if (tenantRepository.findByUsername(dto.getUsername()).isPresent()) {
+            throw new ResourceAlreadyExistsException("Username " + dto.getUsername() + " already taken!");
         }
 
         if (tenantRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -40,8 +40,8 @@ public class TenantService {
         Tenant tenant = new Tenant();
         tenant.setEmail(dto.getEmail());
         tenant.setName(dto.getName());
-        tenant.setUsername(dto.getUserName());
-        tenant.setPhone(dto.getPhoneNumber());
+        tenant.setUsername(dto.getUsername());
+        tenant.setPhone(dto.getPhonenumber());
         tenant.setGender(dto.getGender());
 
         tenant.setPassword(passwordEncoder.encode(dto.getPassword()));
