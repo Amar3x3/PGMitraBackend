@@ -8,6 +8,7 @@ import com.PGmitra.app.Repository.VenderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,6 +31,11 @@ public class PropertyService {
         ownerRepo.save(owner.get());
 
         return response;
+    }
+    public List<Property> getAllProperty(Long id){
+        Optional<Owner> owner = ownerRepo.findById(id);
+        List<Property> properties =propertyRepo.findAllByOwner(owner.get());
+        return properties;
     }
     public Optional<Property> getPropertyById(Long id){
         return propertyRepo.findById(id);

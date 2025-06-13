@@ -1,7 +1,11 @@
 package com.PGmitra.app.DTO;
 
 import com.PGmitra.app.Entity.Owner;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
 public class PropertyDTO {
     private String name;
     private String address;

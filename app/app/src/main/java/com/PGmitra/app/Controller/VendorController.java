@@ -110,6 +110,24 @@ public class VendorController {
                 .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
         }
     }
+    @GetMapping("/property/{id}")
+    public ResponseEntity<Object> getAllProperty(@PathVariable Long id) {
+        try {
+           List<Property> properties = propertyService.getAllProperty(id);
+           List<PropertyDTO> propertyDTOS = new ArrayList<>();
+           for (Property property : properties){
+               PropertyDTO propertyDTO = new PropertyDTO(property.getName(), property.getAddress());
+               propertyDTOS.add(propertyDTO);
+           }
+            return new ResponseEntity<>(propertyDTOS, HttpStatus.CREATED);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
+        }
+    }
     
 
     @PostMapping("/room/{id}")
@@ -131,7 +149,26 @@ public class VendorController {
                 .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
         }
     }
-    
+    @GetMapping("/room/{id}")
+    public ResponseEntity<Object> getAllRooms(@RequestBody RoomDTO roomDTO, @PathVariable Long id) {
+        try {
+            Optional<Property> property = propertyService.getPropertyById(id);
+            if (property.isEmpty()) {
+                throw new ResourceNotFoundException("Property not found with id: " + id);
+            }
+            roomDTO.setProperty(property.get());
+            Room createdRoom = roomsService.createRoom(roomDTO);
+            RoomResponse roomResponse = new RoomResponse(createdRoom.getId(), createdRoom.getCapacity(), createdRoom.getOccupied(), createdRoom.getRent());
+            return new ResponseEntity<>(roomResponse, HttpStatus.CREATED);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
+        }
+    }
+
     @PostMapping("/addNewTenant")
     public ResponseEntity<Object> addNewMember(@RequestBody RoomMemberRequest roomMemberRequest) {
         try {
