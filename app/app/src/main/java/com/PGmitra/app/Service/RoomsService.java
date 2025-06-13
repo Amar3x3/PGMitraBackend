@@ -54,6 +54,10 @@ public class RoomsService {
         return createdRooms;
     }
 
+    public List<Room> getRoomsByProperty(Property property) {
+        return roomsRepo.findByProperty(property);
+    }
+
     public Optional<Room> getRoomByID(long roomId) {
         return roomsRepo.findById(roomId);
     }
