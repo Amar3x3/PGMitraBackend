@@ -15,5 +15,7 @@ public class DiningMenuDTO {
     private String Breakfast;
     private String Lunch;
     private String Dinner;
+
     Long ownerId;
+
 }

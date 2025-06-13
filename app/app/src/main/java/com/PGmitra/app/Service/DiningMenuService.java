@@ -31,7 +31,9 @@ public class DiningMenuService {
     public DiningMenuDTO getMenuByDateAndOwner(Long OwnerId, LocalDate date) {
         DiningMenu menu = menuRepo.findByOwnerIdAndDate(OwnerId, date).orElseThrow(() -> new ResourceNotFoundException("Dining menu not found for date" + date));
 
+
         return new DiningMenuDTO(menu.getId(), menu.getDate(), menu.getBreakfast(), menu.getLunch(), menu.getDinner(), menu.getOwner().getId());
+
 
     }
 
