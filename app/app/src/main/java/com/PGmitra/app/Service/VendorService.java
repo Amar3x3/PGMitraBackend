@@ -9,10 +9,12 @@ import com.PGmitra.app.Repository.AnnouncementRepo;
 import com.PGmitra.app.Repository.VenderRepo;
 import com.PGmitra.app.Response.AnnouncementRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -59,7 +61,7 @@ public class VendorService {
         announcement.setText(announcementRequest.text());
         announcement.setOwner(owner.get());
         announcement.setTitle(announcementRequest.title());
-        announcement.setCreatedAt();
+        announcement.setCreatedAt(LocalDateTime.now());
 
 //        owner.get().getAnnouncements().add(announcement);
         return announcementRepo.save(announcement);
