@@ -35,7 +35,7 @@ public class JwtTokenProvider {
     }
 
     public String generateAccessToken(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
@@ -43,10 +43,10 @@ public class JwtTokenProvider {
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.joining(","));
 
-        logger.debug("Generating access token for user: {} with roles: {}", userDetails.getUsername(), authorities);
-
+            logger.debug("Generating access token for user: {} (ID: {}) with roles: {}", userDetails.getUsername(), userDetails.getUserId(), authorities);
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
+                .claim("userId", userDetails.getUserId())
                 .claim("roles", authorities)
                 .claim("type", "ACCESS")
                 .setIssuedAt(now)
@@ -56,19 +56,34 @@ public class JwtTokenProvider {
     }
 
     public String generateRefreshToken(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshExpirationInMs);
 
-        logger.debug("Generating refresh token for user: {}", userDetails.getUsername());
+        logger.debug("Generating refresh token for user: {} (ID: {})", userDetails.getUsername(), userDetails.getUserId());
 
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
+                .claim("userId", userDetails.getUserId())
                 .claim("type", "REFRESH")
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    public Long getUserIdFromJWT(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return Long.valueOf(claims.get("userId").toString());
+        } catch (JwtException | IllegalArgumentException e) {
+            logger.error("Failed to retrieve userId from JWT token: {}", e.getMessage());
+            throw new JwtException("Cannot get userId from token", e); // Re-throw to indicate failure
+        }
     }
 
     public String getUsernameFromJWT(String token) {

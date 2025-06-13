@@ -31,10 +31,33 @@ public class CustomUserDetailsService implements UserDetailsService {
         logger.debug("Attempting to load user with username: {}", username);
 
         // Try to find owner first
+        // var owner = ownerRepository.findByUsername(username);
+        // if (owner.isPresent()) {
+        //     logger.debug("Found owner with username: {}", username);
+        //     return new User(
+        //         owner.get().getUsername(),
+        //         owner.get().getPassword(),
+        //         Collections.singletonList(new SimpleGrantedAuthority("ROLE_OWNER"))
+        //     );
+        // }
+
+        // // If not found as owner, try to find as tenant
+        // var tenant = tenantRepository.findByUsername(username);
+        // if (tenant.isPresent()) {
+        //     logger.debug("Found tenant with username: {}", username);
+        //     return new User(
+        //         tenant.get().getUsername(),
+        //         tenant.get().getPassword(),
+        //         Collections.singletonList(new SimpleGrantedAuthority("ROLE_TENANT"))
+        //     );
+        // }
+
+        //If below doesn't work, uncomment above
         var owner = ownerRepository.findByUsername(username);
         if (owner.isPresent()) {
             logger.debug("Found owner with username: {}", username);
-            return new User(
+            return new CustomUserDetails(
+                owner.get().getId(),
                 owner.get().getUsername(),
                 owner.get().getPassword(),
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_OWNER"))
@@ -45,7 +68,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         var tenant = tenantRepository.findByUsername(username);
         if (tenant.isPresent()) {
             logger.debug("Found tenant with username: {}", username);
-            return new User(
+            return new CustomUserDetails(
+                tenant.get().getId(),
                 tenant.get().getUsername(),
                 tenant.get().getPassword(),
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_TENANT"))
