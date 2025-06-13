@@ -10,13 +10,15 @@ public class LoginResponse {
     private String refreshToken;
     private HttpStatus status;
     private String message;
+    private Long userId;
 
-    public LoginResponse(String username, String accessToken, String refreshToken, HttpStatus status) {
+    public LoginResponse(String username, String accessToken, String refreshToken, HttpStatus status, Long userId) {
         this.username = username;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.status = status;
         this.message = "Login successful";
+        this.userId = userId;
     }
 
     public LoginResponse(String username, HttpStatus status, String message) {

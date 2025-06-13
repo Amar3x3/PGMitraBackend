@@ -8,6 +8,8 @@ import com.PGmitra.app.Exception.ResourceAlreadyExistsException;
 import com.PGmitra.app.Response.LoginRequest;
 import com.PGmitra.app.Response.LoginResponse;
 import com.PGmitra.app.Response.StatusAndMessageResponse;
+import com.PGmitra.app.Security.CustomUserDetails;
+import com.PGmitra.app.Security.CustomUserDetailsService;
 import com.PGmitra.app.Security.JwtTokenProvider;
 import com.PGmitra.app.Service.TenantService;
 import com.PGmitra.app.Service.VendorService;
@@ -20,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -38,6 +41,10 @@ public class AuthController {
 
     @Autowired
     private TenantService tenantService;
+
+    @Autowired
+    CustomUserDetailsService customUserDetailsService;
+
 
     @PostMapping("/register/owner")
     public ResponseEntity<Object> registerOwner(@RequestBody OwnerDTO ownerDTO) {
@@ -85,13 +92,23 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             logger.debug("Security context updated for user: {}", loginRequest.username());
 
+            //Get user id   ----newly-added----
+            Long userId = null;
+            if (authentication.getPrincipal() instanceof CustomUserDetails customUserDetails) {
+                userId = customUserDetails.getUserId();
+                logger.debug("Retrieved userId: {}", userId);
+            } else {
+                logger.error("Authenticated principal is not an instance of CustomUserDetails. This indicates a configuration error.");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new LoginResponse(loginRequest.username(), HttpStatus.INTERNAL_SERVER_ERROR, "Authentication internal error."));
+            }
+
             // Generate tokens
             String accessToken = tokenProvider.generateAccessToken(authentication);
             String refreshToken = tokenProvider.generateRefreshToken(authentication);
             logger.debug("Generated tokens for user: {}", loginRequest.username());
 
             // Return success response with tokens
-            return ResponseEntity.ok(new LoginResponse(loginRequest.username(), accessToken, refreshToken, HttpStatus.OK));
+            return ResponseEntity.ok(new LoginResponse(loginRequest.username(), accessToken, refreshToken, HttpStatus.OK, userId));
         } catch (Exception ex) {
             logger.error("Login failed for user: {}. Error: {}", loginRequest.username(), ex.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -112,17 +129,20 @@ public class AuthController {
             }
 
             String username = tokenProvider.getUsernameFromJWT(refreshToken);
+            Long userId = tokenProvider.getUserIdFromJWT(refreshToken); // <--- THIS IS THE KEY CHANGE
             logger.debug("Refreshing token for user: {}", username);
+
+            UserDetails customUserDetails = customUserDetailsService.loadUserByUsername(username);
 
             // Create authentication token
             UsernamePasswordAuthenticationToken authenticationToken = 
-                new UsernamePasswordAuthenticationToken(username, null);
+                new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
             
             // Generate new tokens
             String newAccessToken = tokenProvider.generateAccessToken(authenticationToken);
             String newRefreshToken = tokenProvider.generateRefreshToken(authenticationToken);
 
-            return ResponseEntity.ok(new LoginResponse(username, newAccessToken, newRefreshToken, HttpStatus.OK));
+            return ResponseEntity.ok(new LoginResponse(username, newAccessToken, newRefreshToken, HttpStatus.OK, userId));
         } catch (Exception ex) {
             logger.error("Token refresh failed. Error: {}", ex.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
