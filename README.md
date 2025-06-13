@@ -261,10 +261,4 @@ Plugins:
 
 ---
 
-> 🔗 **Maintainer**: [Renuka Rapolu](mailto:your-email@gmail.com)
 
-> 🌟 Don't forget to give the repo a ⭐ if you found it useful!
-
----
-
-© 2025 PG Mitra. All rights reserved.
