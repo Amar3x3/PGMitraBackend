@@ -109,4 +109,12 @@ public class TenantService {
             return Collections.emptyList();
         }
     }
+
+    public List<Tenant> getTenantsByRoom(Long roomId) throws ResourceNotFoundException {
+        List<Tenant> tenants = tenantRepository.findAllByRoom_Id(roomId);
+        if (tenants.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return tenants;
+    }
 }

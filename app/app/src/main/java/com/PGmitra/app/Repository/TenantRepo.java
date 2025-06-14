@@ -14,6 +14,5 @@ public interface TenantRepo extends JpaRepository<Tenant, Integer> {
     Optional<Tenant> findByEmail(String email);
     Optional<Tenant> findById(Long id);
     List<Tenant> findAllByOwner_Id(Long ownerId);
-
-
+    List<Tenant> findAllByRoom_Id(Long roomId);
 }

@@ -78,7 +78,7 @@ public class VendorController {
         List<TenantResponse> tenantResponseList = new ArrayList<>();
         if (tenants.isEmpty()) System.out.println("tenats empty");
         for (Tenant it : tenants){
-            TenantResponse tenantResponse = new TenantResponse(it.getName(), it.getRoom().getRoom_no());
+            TenantResponse tenantResponse = new TenantResponse(it.getId(), it.getName(), it.getRoom().getRoom_no(), it.getPhone());
             System.out.println(tenantResponse.toString());
             tenantResponseList.add(tenantResponse);
         }
@@ -125,6 +125,7 @@ public class VendorController {
                PropertyDTO propertyDTO = new PropertyDTO(property.getId(), property.getName(), property.getAddress());
                propertyDTOS.add(propertyDTO);
            }
+            
             return new ResponseEntity<>(propertyDTOS, HttpStatus.CREATED);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -235,7 +236,7 @@ public class VendorController {
                 .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
+                .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage()));
         }
     }
 
@@ -424,6 +425,32 @@ public class VendorController {
                 updatedRoom.getRent()
             );
             return ResponseEntity.ok(roomResponse);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
+        }
+    }
+
+    @GetMapping("/tenants/{roomId}")
+    public ResponseEntity<Object> getTenantsByRoom(@PathVariable Long roomId) {
+        try {
+            List<Tenant> tenants = tenantService.getTenantsByRoom(roomId);
+            List<TenantResponse> tenantResponseList = new ArrayList<>();
+            
+            for (Tenant tenant : tenants) {
+                TenantResponse tenantResponse = new TenantResponse(
+                    tenant.getId(),
+                    tenant.getName(),
+                    tenant.getRoom().getRoom_no(),
+                    tenant.getPhone()
+                );
+                tenantResponseList.add(tenantResponse);
+            }
+            
+            return new ResponseEntity<>(tenantResponseList, HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
