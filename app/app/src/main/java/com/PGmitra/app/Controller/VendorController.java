@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.time.LocalDate;
 
 
@@ -114,13 +115,14 @@ public class VendorController {
                 .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
         }
     }
+
     @GetMapping("/property/{id}")
     public ResponseEntity<Object> getAllProperty(@PathVariable Long id) {
         try {
            List<Property> properties = propertyService.getAllProperty(id);
            List<PropertyDTO> propertyDTOS = new ArrayList<>();
            for (Property property : properties){
-               PropertyDTO propertyDTO = new PropertyDTO(property.getName(), property.getAddress());
+               PropertyDTO propertyDTO = new PropertyDTO(property.getId(), property.getName(), property.getAddress());
                propertyDTOS.add(propertyDTO);
            }
             return new ResponseEntity<>(propertyDTOS, HttpStatus.CREATED);
@@ -132,8 +134,8 @@ public class VendorController {
                     .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
         }
     }
-    
 
+    
     @PostMapping("/room/{id}")
     public ResponseEntity<Object> createNewRoom(@RequestBody RoomDTO roomDTO, @PathVariable Long id) {
         try {
@@ -143,7 +145,7 @@ public class VendorController {
             }
             roomDTO.setProperty(property.get());
             Room createdRoom = roomsService.createRoom(roomDTO);
-            RoomResponse roomResponse = new RoomResponse(createdRoom.getId(), createdRoom.getCapacity(), createdRoom.getOccupied(), createdRoom.getRent());
+            RoomResponse roomResponse = new RoomResponse(createdRoom.getRoom_no(), createdRoom.getId(), createdRoom.getCapacity(), createdRoom.getOccupied(), createdRoom.getRent());
             return new ResponseEntity<>(roomResponse, HttpStatus.CREATED);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -153,17 +155,20 @@ public class VendorController {
                 .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
         }
     }
+
     @GetMapping("/room/{id}")
-    public ResponseEntity<Object> getAllRooms(@RequestBody RoomDTO roomDTO, @PathVariable Long id) {
+    public ResponseEntity<Object> getAllRoomsByPropertyId(@PathVariable Long id) {
         try {
             Optional<Property> property = propertyService.getPropertyById(id);
             if (property.isEmpty()) {
                 throw new ResourceNotFoundException("Property not found with id: " + id);
             }
-            roomDTO.setProperty(property.get());
-            Room createdRoom = roomsService.createRoom(roomDTO);
-            RoomResponse roomResponse = new RoomResponse(createdRoom.getId(), createdRoom.getCapacity(), createdRoom.getOccupied(), createdRoom.getRent());
-            return new ResponseEntity<>(roomResponse, HttpStatus.CREATED);
+            List<Room> rooms = roomsService.getRoomsByProperty(property.get());
+            List<RoomResponse> roomResponses = rooms.stream()
+                .map(room -> new RoomResponse(room.getRoom_no(), room.getId(), room.getCapacity(), room.getOccupied(), room.getRent()))
+                .collect(Collectors.toList());
+            
+                return new ResponseEntity<>(roomResponses, HttpStatus.OK);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
@@ -172,6 +177,27 @@ public class VendorController {
                     .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
         }
     }
+    
+    // Amar's GetMapping Snippet
+    // @GetMapping("/room/{id}")
+    // public ResponseEntity<Object> getAllRooms(@RequestBody RoomDTO roomDTO, @PathVariable Long id) {
+    //     try {
+    //         Optional<Property> property = propertyService.getPropertyById(id);
+    //         if (property.isEmpty()) {
+    //             throw new ResourceNotFoundException("Property not found with id: " + id);
+    //         }
+    //         roomDTO.setProperty(property.get());
+    //         Room createdRoom = roomsService.createRoom(roomDTO);
+    //         RoomResponse roomResponse = new RoomResponse(createdRoom.getRoom_no(), createdRoom.getId(), createdRoom.getCapacity(), createdRoom.getOccupied(), createdRoom.getRent());
+    //         return new ResponseEntity<>(roomResponse, HttpStatus.CREATED);
+    //     } catch (ResourceNotFoundException ex) {
+    //         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+    //                 .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
+    //     } catch (Exception ex) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    //                 .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
+    //     }
+    // }
 
     @PostMapping("/addNewTenant")
     public ResponseEntity<Object> addNewMember(@RequestBody RoomMemberRequest roomMemberRequest) {
@@ -181,7 +207,7 @@ public class VendorController {
             long tenant_id = roomMemberRequest.tenant_id();
 
             Room createdRoom = roomsService.addNewTenant(room_id, property_id, tenant_id);
-            RoomResponse roomResponse = new RoomResponse(createdRoom.getId(), createdRoom.getOccupied(), createdRoom.getCapacity(), createdRoom.getRent());
+            RoomResponse roomResponse = new RoomResponse(createdRoom.getRoom_no(), createdRoom.getId(), createdRoom.getOccupied(), createdRoom.getCapacity(), createdRoom.getRent());
             return new ResponseEntity<>(roomResponse, HttpStatus.CREATED);
         } catch (RoomCapacityFull ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -391,6 +417,7 @@ public class VendorController {
         try {
             Room updatedRoom = roomsService.updateRoom(roomId, roomDTO);
             RoomResponse roomResponse = new RoomResponse(
+                updatedRoom.getRoom_no(),
                 updatedRoom.getId(),
                 updatedRoom.getCapacity(),
                 updatedRoom.getOccupied(),

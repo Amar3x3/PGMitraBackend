@@ -7,8 +7,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PropertyDTO {
+    private Long prop_id;
     private String name;
     private String address;
+
+    public void setPropId(Long prop_id){
+        this.prop_id = prop_id;
+    }
+
+    public Long getPropId() {
+        return prop_id;
+    }
+
     public String getName() {
         return name;
     }
