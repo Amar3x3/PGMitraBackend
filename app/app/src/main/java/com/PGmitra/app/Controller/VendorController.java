@@ -397,6 +397,37 @@ public class VendorController {
         }
     }
 
+
+    //added getMapping for Room Id
+    @GetMapping("/roomdetails/{roomId}") 
+    public ResponseEntity<Object> getRoomDetailsById(@PathVariable Long roomId) {
+        try {
+           
+            Optional<Room> roomOptional = roomsService.getRoomByID(roomId);
+            if (roomOptional.isEmpty()) {
+                throw new ResourceNotFoundException("Room not found with id: " + roomId);
+            }
+            Room foundRoom = roomOptional.get();
+            RoomResponse roomResponse = new RoomResponse(
+                foundRoom.getRoom_no(),
+                foundRoom.getId(),
+                foundRoom.getCapacity(),
+                foundRoom.getOccupied(),
+                foundRoom.getRent()
+            );
+
+            return new ResponseEntity<>(roomResponse, HttpStatus.OK);
+
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
+        } catch (Exception ex) {
+            ex.printStackTrace(); 
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred while fetching room details"));
+        }
+    }
+
     @DeleteMapping("/room/{roomId}")
     public ResponseEntity<Object> deleteRoom(@PathVariable Long roomId) {
         try {
