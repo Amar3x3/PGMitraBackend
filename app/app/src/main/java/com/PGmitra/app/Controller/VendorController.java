@@ -257,8 +257,8 @@ public class VendorController {
     @PostMapping("/payment")
     public ResponseEntity<Object> createPayment(@RequestBody PaymentDTO paymentDTO) {
         try {
-            Payment payment = paymentService.createPayment(paymentDTO);
-            PaymentResponse paymentResponse = new PaymentResponse(payment.getId(), payment.getTenant().getName(), payment.getAmount(), payment.getStatus(), payment.getDueDate());
+            Payment it = paymentService.createPayment(paymentDTO);
+            PaymentResponse paymentResponse = new PaymentResponse(it.getId(), it.getTenant().getName(), it.getAmount(), it.getStatus(), it.getDueDate(), it.getTenant().getRoom().getRoom_no(), it.getTenant().getRoom().getProperty().getName());
             return new ResponseEntity<>(paymentResponse, HttpStatus.CREATED);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -275,7 +275,7 @@ public class VendorController {
             List<Payment> payments = paymentService.getPaymentsByOwner(ownerId);
             List<PaymentResponse> paymentResponses = new ArrayList<>();
             for (Payment it : payments){
-                PaymentResponse paymentResponse = new PaymentResponse(it.getId(), it.getTenant().getName(), it.getAmount(), it.getStatus(), it.getDueDate());
+                PaymentResponse paymentResponse = new PaymentResponse(it.getId(), it.getTenant().getName(), it.getAmount(), it.getStatus(), it.getDueDate(), it.getTenant().getRoom().getRoom_no(), it.getTenant().getRoom().getProperty().getName());
                 paymentResponses.add(paymentResponse);
             }
             return ResponseEntity.ok(paymentResponses);
@@ -491,6 +491,15 @@ public class VendorController {
         }
     }
     
-   
+    @GetMapping("/payments/recent/{ownerId}")
+    public ResponseEntity<List<PaymentResponse>> getRecentPayments(@PathVariable Long ownerId) {
+        try {
+            List<PaymentResponse> payments = paymentService.getRecentPaymentsByOwner(ownerId);
+            return ResponseEntity.ok(payments);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     
 }
