@@ -5,7 +5,10 @@ import com.PGmitra.app.Entity.Owner;
 import com.PGmitra.app.Entity.Payment;
 import com.PGmitra.app.Entity.Room;
 import com.PGmitra.app.Entity.Tenant;
+import com.PGmitra.app.Entity.Owner;
 import com.PGmitra.app.Enums.Status;
+import com.PGmitra.app.Repository.PaymentRepo;
+import com.PGmitra.app.Response.PaymentResponse;
 import com.PGmitra.app.Exception.ResourceNotFoundException;
 import com.PGmitra.app.Repository.PaymentRepo;
 import com.PGmitra.app.Repository.TenantRepo;
@@ -20,9 +23,12 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @Service
 public class PaymentService {
+
     @Autowired
     private PaymentRepo paymentRepo;
 
@@ -78,6 +84,17 @@ public class PaymentService {
         }
         
         return paymentRepo.save(payment);
+    }
+
+    public List<PaymentResponse> getRecentPaymentsByOwner(Long ownerId) {
+        List<Payment> payments = paymentRepo.findByOwnerIdOrderByPaidDateDesc(ownerId);
+        List<PaymentResponse> paymentResponses = new ArrayList<>();
+        for(Payment it : payments){
+            PaymentResponse paymentResponse = new PaymentResponse(it.getId(), it.getTenant().getName(), it.getAmount(), it.getStatus(), it.getDueDate(), it.getTenant().getRoom().getRoom_no(), it.getTenant().getRoom().getProperty().getName());
+            paymentResponses.add(paymentResponse);
+        }
+        return paymentResponses;   
+    
     }
 
     public List<Payment> createPaymentForOwnersTenants(Long ownerId, LocalDate duDate) {
