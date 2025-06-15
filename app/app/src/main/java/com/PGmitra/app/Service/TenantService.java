@@ -66,7 +66,7 @@ public class TenantService {
         if (tenant.getRoom() != null) {
             room_no = tenant.getRoom().getRoom_no();
         }
-        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getName(), tenant.getPhone(), tenant.getGender(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation(), room_no);  //Remodelled, as foodPreference removed from tenantProfileDTO
+        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getName(), tenant.getPhone(), tenant.getGender(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation(), room_no, tenant.getAadharNumber());  //Remodelled, as foodPreference removed from tenantProfileDTO
 
      
     }
@@ -78,7 +78,7 @@ public class TenantService {
         if (tenant.getRoom() != null) {
             room_no = tenant.getRoom().getRoom_no();
         }
-        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getName(), tenant.getPhone(), tenant.getGender(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation(), room_no);
+        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getName(), tenant.getPhone(), tenant.getGender(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation(), room_no, tenant.getAadharNumber());
 
 
     }

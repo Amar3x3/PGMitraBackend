@@ -3,6 +3,7 @@ package com.PGmitra.app.Service;
 import com.PGmitra.app.DTO.PaymentDTO;
 import com.PGmitra.app.Entity.Owner;
 import com.PGmitra.app.Entity.Payment;
+import com.PGmitra.app.Entity.Room;
 import com.PGmitra.app.Entity.Tenant;
 import com.PGmitra.app.Entity.Owner;
 import com.PGmitra.app.Enums.Status;
@@ -15,7 +16,11 @@ import com.PGmitra.app.Repository.VenderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,6 +34,9 @@ public class PaymentService {
 
     @Autowired
     private TenantRepo tenantRepo;
+
+    @Autowired
+    private TenantService tenantService;
 
     @Autowired
     private VenderRepo ownerRepo;
@@ -87,5 +95,33 @@ public class PaymentService {
         }
         return paymentResponses;   
     
+    }
+
+    public List<Payment> createPaymentForOwnersTenants(Long ownerId, LocalDate duDate) {
+        Owner owner = ownerRepo.findById(ownerId).orElseThrow(() -> new ResourceNotFoundException("Onwer not found with ID: " + ownerId));
+        List<Tenant> tenants = tenantService.getAllTenants(ownerId);
+        List<Payment> createdPayments = new ArrayList<>();
+        if (tenants == null) {
+            throw new ResourceNotFoundException("no tenants found for owner with ID:" + ownerId);
+        }
+
+        YearMonth dueMonth = YearMonth.from(duDate);
+
+        for (Tenant tenant : tenants) {
+            boolean alreadyExists = paymentRepo.existsByTenantIdAndMonth(tenant.getId(), dueMonth);
+            Room room = tenant.getRoom();
+            if (!alreadyExists) {
+                Payment payment = new Payment();
+                payment.setDueDate(duDate);
+                payment.setOwner(owner);
+                payment.setStatus(Status.INCOMPLETE);
+                payment.setTenant(tenant);
+                BigDecimal rentAmt = room.getRent().divide(BigDecimal.valueOf(room.getCapacity()),2, RoundingMode.HALF_UP);
+                payment.setAmount(rentAmt);
+                createdPayments.add(paymentRepo.save(payment));
+                
+            }
+        }
+        return createdPayments;
     }
 }
