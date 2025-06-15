@@ -18,4 +18,5 @@ public class TenantProfileDTO {
     private String emergencyContactPhone;
     private String occupation; 
     private Integer roomNo;
+    private String aadharNumber;
 }
