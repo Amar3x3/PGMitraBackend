@@ -1,5 +1,6 @@
 package com.PGmitra.app.Controller;
 
+import com.PGmitra.app.DTO.DueDateDTO;
 import com.PGmitra.app.DTO.FeedbackDTO;
 import com.PGmitra.app.DTO.FeedbackViewDTO;
 import com.PGmitra.app.DTO.FeedbackDTO;
@@ -25,6 +26,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.time.LocalDate;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 
@@ -486,6 +490,20 @@ public class VendorController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new StatusAndMessageResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
         } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
+        }
+    }
+    
+    @PostMapping("/setduedate/{ownerId}")
+    public ResponseEntity<Object> setDueDateCreatePayment(@PathVariable Long ownerId, @RequestBody DueDateDTO dueDateReq) {
+        try{
+            LocalDate dueDate = dueDateReq.getDueDate();
+            List<Payment> payments = paymentService.createPaymentForOwnersTenants(ownerId, dueDate);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch(ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch(Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new StatusAndMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"));
         }
