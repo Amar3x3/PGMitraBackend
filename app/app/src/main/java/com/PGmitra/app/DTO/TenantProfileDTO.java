@@ -19,4 +19,6 @@ public class TenantProfileDTO {
     private String occupation; 
     private Integer roomNo;
     private String aadharNumber;
+    private String home_address;
+    private String company_name;
 }

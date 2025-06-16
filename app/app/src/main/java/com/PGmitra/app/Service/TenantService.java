@@ -43,12 +43,13 @@ public class TenantService {
         tenant.setUsername(dto.getUsername());
         tenant.setPhone(dto.getPhonenumber());
         tenant.setGender(dto.getGender());
-
         tenant.setPassword(passwordEncoder.encode(dto.getPassword()));
         tenant.setAadharNumber(dto.getAadharNumber());
         tenant.setEmergencyContactName(dto.getEmergencyContactName());
         tenant.setEmergencyContactPhone(dto.getEmergencyContactPhone());
         tenant.setOccupation(dto.getOccupation());
+        tenant.setHome_address(dto.getHome_address());
+        tenant.setCompany_name(dto.getCompany_name());
 
         return tenantRepository.save(tenant);
     }
@@ -66,9 +67,20 @@ public class TenantService {
         if (tenant.getRoom() != null) {
             room_no = tenant.getRoom().getRoom_no();
         }
-        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getName(), tenant.getPhone(), tenant.getGender(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation(), room_no, tenant.getAadharNumber());  //Remodelled, as foodPreference removed from tenantProfileDTO
-
-     
+        return new TenantProfileDTO(
+            tenant.getId(), 
+            tenant.getEmail(), 
+            tenant.getName(), 
+            tenant.getPhone(), 
+            tenant.getGender(), 
+            tenant.getEmergencyContactName(), 
+            tenant.getEmergencyContactPhone(), 
+            tenant.getOccupation(), 
+            room_no, 
+            tenant.getAadharNumber(),
+            tenant.getHome_address(),
+            tenant.getCompany_name()
+        );
     }
 
     public TenantProfileDTO getTenantProfile(Long tenantId) throws ResourceNotFoundException {
@@ -78,9 +90,20 @@ public class TenantService {
         if (tenant.getRoom() != null) {
             room_no = tenant.getRoom().getRoom_no();
         }
-        return new TenantProfileDTO(tenant.getId(), tenant.getEmail(), tenant.getName(), tenant.getPhone(), tenant.getGender(), tenant.getEmergencyContactName(), tenant.getEmergencyContactPhone(), tenant.getOccupation(), room_no, tenant.getAadharNumber());
-
-
+        return new TenantProfileDTO(
+            tenant.getId(), 
+            tenant.getEmail(), 
+            tenant.getName(), 
+            tenant.getPhone(), 
+            tenant.getGender(), 
+            tenant.getEmergencyContactName(), 
+            tenant.getEmergencyContactPhone(), 
+            tenant.getOccupation(), 
+            room_no, 
+            tenant.getAadharNumber(),
+            tenant.getHome_address(),
+            tenant.getCompany_name()
+        );
     }
     
 
@@ -98,6 +121,8 @@ public class TenantService {
         if(dto.getEmergencyContactName()!=null) tenant.setEmergencyContactName(dto.getEmergencyContactName());
         if(dto.getEmergencyContactPhone()!=null) tenant.setEmergencyContactPhone(dto.getEmergencyContactPhone());
         if(dto.getOccupation()!=null) tenant.setOccupation(dto.getOccupation());
+        if(dto.getHome_address()!=null) tenant.setHome_address(dto.getHome_address());
+        if(dto.getCompany_name()!=null) tenant.setCompany_name(dto.getCompany_name());
 
         tenantRepository.save(tenant);
     }
@@ -106,6 +131,22 @@ public class TenantService {
         try{
             return tenantRepository.findAllByOwner_Id(ownerId);
         }catch (Exception e){
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Tenant> searchTenantsByState(Long ownerId, String state) {
+        try {
+            return tenantRepository.findByHomeAddressContainingAndOwnerId(state, ownerId);
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Tenant> searchTenantsByCompany(Long ownerId, String company) {
+        try {
+            return tenantRepository.findByCompanyNameContainingAndOwnerId(company, ownerId);
+        } catch (Exception e) {
             return Collections.emptyList();
         }
     }

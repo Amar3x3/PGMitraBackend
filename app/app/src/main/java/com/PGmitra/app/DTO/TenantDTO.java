@@ -21,5 +21,7 @@ public class TenantDTO {
     private String emergencyContactPhone;
     private String aadharNumber; 
     private String occupation;
+    private String home_address;
+    private String company_name;
 }
 

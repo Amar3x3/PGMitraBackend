@@ -28,6 +28,8 @@ public class Tenant {
     private String emergencyContactPhone;
     private String aadharNumber; 
     private String occupation;
+    private String home_address;
+    private String company_name;
 
     public String getPhone() {
         return phone;

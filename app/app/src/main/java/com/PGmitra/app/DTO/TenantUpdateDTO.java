@@ -15,5 +15,7 @@ public class TenantUpdateDTO {
 
     private String emergencyContactName;
     private String emergencyContactPhone;
-    private String occupation; 
+    private String occupation;
+    private String home_address;
+    private String company_name;
 }

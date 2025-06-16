@@ -9,6 +9,7 @@ import com.PGmitra.app.DTO.OwnerDTO;
 import com.PGmitra.app.DTO.PaymentDTO;
 import com.PGmitra.app.DTO.PropertyDTO;
 import com.PGmitra.app.DTO.RoomDTO;
+import com.PGmitra.app.DTO.TenantDTO;
 import com.PGmitra.app.Entity.*;
 import com.PGmitra.app.Enums.Status;
 import com.PGmitra.app.Exception.ResourceAlreadyExistsException;
@@ -82,7 +83,7 @@ public class VendorController {
         List<TenantResponse> tenantResponseList = new ArrayList<>();
         if (tenants.isEmpty()) System.out.println("tenats empty");
         for (Tenant it : tenants){
-            TenantResponse tenantResponse = new TenantResponse(it.getId(), it.getName(), it.getRoom().getRoom_no(), it.getPhone());
+            TenantResponse tenantResponse = new TenantResponse(it.getId(), it.getName(), it.getRoom().getRoom_no(), it.getPhone(), it.getHome_address(), it.getCompany_name(), it.getRoom().getId(), it.getRoom().getProperty().getId());
             System.out.println(tenantResponse.toString());
             tenantResponseList.add(tenantResponse);
         }
@@ -480,7 +481,11 @@ public class VendorController {
                     tenant.getId(),
                     tenant.getName(),
                     tenant.getRoom().getRoom_no(),
-                    tenant.getPhone()
+                    tenant.getPhone(),
+                    tenant.getHome_address(),
+                    tenant.getCompany_name(),
+                    tenant.getRoom().getId(),
+                    tenant.getRoom().getProperty().getId()
                 );
                 tenantResponseList.add(tenantResponse);
             }
@@ -519,5 +524,29 @@ public class VendorController {
         }
     }
 
-    
+    @GetMapping("/search/state/{ownerId}")
+    public ResponseEntity<List<TenantResponse>> searchTenantsByState(
+            @PathVariable Long ownerId,
+            @RequestParam String state) {
+        List<Tenant> tenants = tenantService.searchTenantsByState(ownerId, state);
+        List<TenantResponse> tenantResponseList = new ArrayList<>();
+        for (Tenant tenant : tenants) {
+            TenantResponse tenantResponse = new TenantResponse(tenant.getId(), tenant.getName(), tenant.getRoom().getRoom_no(), tenant.getPhone(), tenant.getHome_address(), tenant.getCompany_name(), tenant.getRoom().getId(), tenant.getRoom().getProperty().getId());
+            tenantResponseList.add(tenantResponse);
+        }
+        return ResponseEntity.ok(tenantResponseList);
+    }
+
+    @GetMapping("/search/company/{ownerId}")
+    public ResponseEntity<List<TenantResponse>> searchTenantsByCompany(
+            @PathVariable Long ownerId,
+            @RequestParam String company) {
+        List<Tenant> tenants = tenantService.searchTenantsByCompany(ownerId, company);
+                List<TenantResponse> tenantResponseList = new ArrayList<>();
+        for (Tenant tenant : tenants) {
+            TenantResponse tenantResponse = new TenantResponse(tenant.getId(), tenant.getName(), tenant.getRoom().getRoom_no(), tenant.getPhone(), tenant.getHome_address(), tenant.getCompany_name(), tenant.getRoom().getId(), tenant.getRoom().getProperty().getId());
+            tenantResponseList.add(tenantResponse);
+        }
+        return ResponseEntity.ok(tenantResponseList);
+    }
 }
