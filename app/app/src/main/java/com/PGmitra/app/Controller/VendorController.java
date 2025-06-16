@@ -206,7 +206,7 @@ public class VendorController {
     // }
 
     @PostMapping("/addNewTenant")
-    public ResponseEntity<Object> addNewMember(@RequestBody RoomMemberRequest roomMemberRequest) {
+    public ResponseEntity<Object> addNewMember(@RequestBody RoomMemberRequest roomMemberRequest) throws ResourceAlreadyExistsException{
         try {
             long room_id = roomMemberRequest.room_id();
             long property_id = roomMemberRequest.property_id();
@@ -293,12 +293,11 @@ public class VendorController {
         }
     }
 
-    @PutMapping("/payment/{paymentId}/status")
+    @PutMapping("/payment/complete/{paymentId}")
     public ResponseEntity<Object> updatePaymentStatus(
-            @PathVariable Long paymentId,
-            @RequestParam Status status) {
+            @PathVariable Long paymentId) {
         try {
-            Payment payment = paymentService.updatePaymentStatus(paymentId, status);
+            Payment payment = paymentService.updatePaymentStatus(paymentId);
             return ResponseEntity.ok(payment);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

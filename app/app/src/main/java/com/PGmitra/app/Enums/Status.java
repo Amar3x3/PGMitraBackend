@@ -1,7 +1,7 @@
 package com.PGmitra.app.Enums;
 
 public enum Status {
-    IN_PROGRESS,
+    INCOMPLETE,
     COMPLETE,
-    INCOMPLETE
+    OVERDUE
 }

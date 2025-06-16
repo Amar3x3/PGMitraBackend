@@ -21,19 +21,22 @@ public class Payment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Enumerated(EnumType.STRING)
+ 
     @NonNull
     private Tenant tenant;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Enumerated(EnumType.STRING)
     @NonNull
     private Owner owner;
 
 
     private BigDecimal amount;
+
+  
     private Status status;
+
     private LocalDate paidDate;
+
     private PaymentMethod paymentMethod;
     private LocalDate dueDate;
 

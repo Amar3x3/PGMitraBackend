@@ -6,6 +6,7 @@ import com.PGmitra.app.Entity.Property;
 import com.PGmitra.app.Entity.Room;
 import com.PGmitra.app.Entity.Tenant;
 import com.PGmitra.app.Exception.ResourceNotFoundException;
+import com.PGmitra.app.Exception.ResourceAlreadyExistsException;
 import com.PGmitra.app.Exception.RoomCapacityFull;
 import com.PGmitra.app.Repository.PropertyRepo;
 import com.PGmitra.app.Repository.RoomsRepo;
@@ -62,7 +63,7 @@ public class RoomsService {
         return roomsRepo.findById(roomId);
     }
 
-    public Room addNewTenant(long roomId, long propertyId, long tenantId) throws RoomCapacityFull {
+    public Room addNewTenant(long roomId, long propertyId, long tenantId) throws RoomCapacityFull , ResourceAlreadyExistsException{
         Optional<Property> property = propertyService.getPropertyById(propertyId);
         Optional<Room> room = roomsRepo.findById(roomId);
         Optional<Tenant> tenant = tenantService.getTenantById(tenantId);
@@ -71,6 +72,8 @@ public class RoomsService {
        List<Tenant> tenantList =  room.get().getTenants();
        tenantList.add(tenant.get());
 
+        if(tenant.get().getOwner() != null) throw new ResourceAlreadyExistsException("Tenant already exists in different room or pg");
+        
        room.get().setTenants(tenantList);
        if (room.get().getOccupied() < room.get().getCapacity()){
            room.get().setOccupied(room.get().getOccupied() + 1);
@@ -103,8 +106,7 @@ public class RoomsService {
     public void deleteRoom(Long id) {
         Room room = roomsRepo.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + id));
-        
-        // Check if room has any tenants
+   
         if (room.getOccupied() > 0) {
             throw new IllegalStateException("Cannot delete room with active tenants");
         }
@@ -116,7 +118,7 @@ public class RoomsService {
         Room room = roomsRepo.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + id));
         
-        // Validate new capacity is not less than current occupancy
+        
         if (roomDTO.getCapacity() < room.getOccupied()) {
             throw new IllegalStateException("New capacity cannot be less than current occupancy");
         }

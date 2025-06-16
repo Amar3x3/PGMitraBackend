@@ -1,8 +1,8 @@
 package com.PGmitra.app.Response;
 
-import com.PGmitra.app.Enums.Status;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import com.PGmitra.app.Enums.Status;
 
 public record PaymentResponse(
     Long id,
@@ -10,6 +10,6 @@ public record PaymentResponse(
     BigDecimal amount,
     Status status,
     LocalDate dueDate,
-    Integer roomNumber,
+    int roomNo,
     String propertyName
 ) {}

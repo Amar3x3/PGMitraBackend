@@ -74,14 +74,13 @@ public class PaymentService {
         return paymentRepo.findByOwner(owner);
     }
 
-    public Payment updatePaymentStatus(Long paymentId, Status status) {
+    public Payment updatePaymentStatus(Long paymentId) {
         Payment payment = paymentRepo.findById(paymentId)
             .orElseThrow(() -> new ResourceNotFoundException("Payment not found with id: " + paymentId));
+        if(payment.getStatus() == Status.COMPLETE) return payment;
         
-        payment.setStatus(status);
-        if (status == Status.COMPLETE) {
+        payment.setStatus(Status.COMPLETE);
             payment.setPaidDate(LocalDate.now());
-        }
         
         return paymentRepo.save(payment);
     }
@@ -123,5 +122,17 @@ public class PaymentService {
             }
         }
         return createdPayments;
+    }
+
+    public List<Payment> getPendingPayments() {
+        return paymentRepo.findByStatus(Status.INCOMPLETE);
+    }
+
+    public Payment completePayment(Long paymentId) {
+        Payment payment = paymentRepo.findById(paymentId)
+            .orElseThrow(() -> new ResourceNotFoundException("Payment not found with id: " + paymentId));
+        
+        payment.setStatus(Status.COMPLETE);
+        return paymentRepo.save(payment);
     }
 }
